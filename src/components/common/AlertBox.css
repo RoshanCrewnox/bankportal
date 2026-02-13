@@ -1,0 +1,131 @@
+ /* Overlay with Blur */
+.alert-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(14px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10001;
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Alert Box Container */
+.alert-box {
+  padding: 24px;
+  width: 90%;
+  max-width: 400px;
+  border-radius: 16px;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  animation: slideUp 0.4s ease;
+  position: relative;
+}
+
+/* Icon Wrapper */
+.alert-icon {
+  position: relative;
+  margin-bottom: 12px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-help {
+  position: absolute;
+  animation: scaleIn 0.5s ease;
+}
+
+.icon-success {
+  position: absolute;
+  color: #16a34a;
+  animation: scaleIn 0.5s ease;
+}
+
+.icon-error {
+  position: absolute;
+  color: #ef4444;
+  animation: scaleIn 0.5s ease;
+}
+
+.brandlogodiv {
+  border: 3px white solid;
+  border-radius: 50%;
+  padding: 0.5rem;
+}
+
+.icon-alert {
+  position: absolute;
+  color: #f59e0b;
+  animation: rotateAlert 3s linear infinite;
+}
+
+/* Title & Message */
+.alert-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.alert-message {
+  font-size: 1rem;
+  margin: 12px 0 20px;
+}
+
+/* Buttons */
+.alert-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.btn-confirm {
+  background: linear-gradient(to right, #16a34a, #4ade80);
+  color: white;
+  font-weight: bold;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-cancel {
+  background: linear-gradient(to right, #ef4444, #f87171);
+  color: white;
+  font-weight: bold;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-confirm:hover, .btn-cancel:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(40px); }
+  to { transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.6); }
+  to { transform: scale(1); }
+}
+
+@keyframes rotateAlert {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
