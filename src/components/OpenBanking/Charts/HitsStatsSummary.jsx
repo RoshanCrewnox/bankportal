@@ -110,7 +110,7 @@ const HitsStatsSummary = ({ theme, data }) => {
             </div>
 
             <div className="grid grid-cols-2 gap-3">
-                <div className="bg-gray-50 dark:bg-white/[0.03] border border-gray-100 dark:border-white/5 rounded-xl p-3 flex items-center gap-3">
+                <div className="bg-gray-50 dark:bg-white/3 border border-gray-100 dark:border-white/5 rounded-xl p-3 flex items-center gap-3">
                     <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-green-500/10 border border-green-500/20">
                         <AuthorizedIcon />
                     </div>
@@ -119,7 +119,7 @@ const HitsStatsSummary = ({ theme, data }) => {
                         <div className="text-[10px] text-gray-500 font-medium mt-1">Authorized</div>
                     </div>
                 </div>
-                <div className="bg-gray-50 dark:bg-white/[0.03] border border-gray-100 dark:border-white/5 rounded-xl p-3 flex items-center gap-3">
+                <div className="bg-gray-50 dark:bg-white/3 border border-gray-100 dark:border-white/5 rounded-xl p-3 flex items-center gap-3">
                     <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-red-500/10 border border-red-500/20">
                         <UnauthorizedIcon />
                     </div>

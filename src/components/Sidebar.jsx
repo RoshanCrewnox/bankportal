@@ -7,6 +7,8 @@ import { Icons } from "./common/icon.jsx";
 import { ThemeContext } from "./common/ThemeContext";
 import { useSelector } from "react-redux";
 
+import { sidebarItems } from "../utils/sidebarItems";
+
 const NewSidebar = ({ sidebarOpen, setSidebarOpen }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -23,39 +25,13 @@ const NewSidebar = ({ sidebarOpen, setSidebarOpen }) => {
     });
   };
 
-  const navItemsNew = [
-    {
-      id: "open-banking",
-      name: "Open Banking",
-      icon: <Building2 className="w-5 h-5" />,
-      hasSubmenu: true,
-      submenu: [
-        {
-          id: "ob-dashboard",
-          name: "Dashboard",
-          pathname: "/open-banking/dashboard",
-        },
-        {
-          id: "ob-provisioning",
-          name: "Provisioning",
-          pathname: "/open-banking/provisioning",
-        },
-        {
-          id: "ob-consent",
-          name: "Consent Center",
-          pathname: "/open-banking/consent-center",
-        },
-      ],
-    },
-  ];
-
   const normalizeName = (name) => {
     return name.replace(/ -N$/, "").trim().toLowerCase();
   };
 
   useEffect(() => {
-    // For now, always show the Open Banking items as requested
-    setFilteredNavItems(navItemsNew);
+    // Start with items from config
+    setFilteredNavItems(sidebarItems);
   }, [roleData]);
 
   const isPathActive = (path) => {
@@ -72,7 +48,7 @@ const NewSidebar = ({ sidebarOpen, setSidebarOpen }) => {
   return (
     <div
       className={`sidebar h-[calc(100vh)] overflow-y-auto transition-all duration-300 ${
-        theme === "dark" ? "bg-[#2F3349]" : "bg-white"
+        theme === "dark" ? "bg-secondary-dark-bg" : "bg-white"
       }`}
       style={{ width: "260px" }}
     >
@@ -139,7 +115,7 @@ const NewSidebar = ({ sidebarOpen, setSidebarOpen }) => {
                                   ? theme === 'light' ? "bg-orange-50 text-primary-orange" : "bg-white/5 text-primary-orange"
                                   : theme === 'light'
                                     ? "text-gray-600 hover:text-primary-orange hover:bg-gray-50"
-                                    : "text-gray-400 hover:text-primary-orange hover:bg-white/[0.02]"
+                                    : "text-gray-400 hover:text-primary-orange hover:bg-white/2"
                               }`}
                             >
                               <div className={`w-1.5 h-1.5 rounded-full mr-3 transition-all ${
