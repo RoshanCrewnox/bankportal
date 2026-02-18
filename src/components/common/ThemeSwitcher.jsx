@@ -45,7 +45,6 @@ const ThemeSwitcher = () => {
   const themeOptions = [
     { id: 'light', label: 'Light', icon: TbSun },
     { id: 'dark', label: 'Dark', icon: TbMoonStars },
-    { id: 'system', label: 'System', icon: TbDeviceDesktopAnalytics },
   ];
 
   const CurrentIcon = themeOptions.find(opt => opt.id === theme)?.icon || TbSun;
@@ -65,9 +64,9 @@ const ThemeSwitcher = () => {
       </button>
 
       {isOpen && (
-        <div className={`absolute right-0 mt-3 w-40 rounded-xl shadow-2xl border transition-all duration-300 py-2 z-[100]
+        <div className={`absolute right-0 mt-3 w-40 rounded-xl shadow-2xl border transition-all duration-300 py-2 z-100
           ${theme === 'dark' 
-            ? 'bg-[#2F3349] border-white/10 shadow-black/40' 
+            ? 'bg-secondary-dark-bg border-white/10 shadow-black/40' 
             : 'bg-white border-gray-100 shadow-gray-200'
           }`}
         >

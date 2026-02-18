@@ -1,5 +1,5 @@
 import React from 'react';
-import { Building2, LayoutDashboard, Settings2, ShieldCheck } from "lucide-react";
+import { Building2, LayoutDashboard, Settings2, ShieldCheck, FileJson } from "lucide-react";
 
 /**
  * Sidebar navigation configuration
@@ -26,6 +26,24 @@ export const sidebarItems = [
         id: "ob-consent",
         name: "Consent Center",
         pathname: "/open-banking/consent-center",
+      },
+    ],
+  },
+  {
+    id: "schema-registry",
+    name: "Schema Registry",
+    icon: <FileJson className="w-5 h-5" />,
+    hasSubmenu: true,
+    submenu: [
+      {
+        id: "sr-builder",
+        name: "Schema Builder",
+        pathname: "/schema-registry/builder",
+      },
+      {
+        id: "sr-fields",
+        name: "Fields Registry",
+        pathname: "/schema-registry/fields",
       },
     ],
   },

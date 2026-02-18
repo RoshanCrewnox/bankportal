@@ -1,3 +1,5 @@
+import schemaRegistry from './schemaRegistryService';
+
 const services = {
   user: {
     USER_PROFILE: async () => ({
@@ -19,7 +21,8 @@ const services = {
     LOGOUT: async () => {
       console.log("Logged out");
     }
-  }
+  },
+  schemaRegistry
 };
 
 export default services;

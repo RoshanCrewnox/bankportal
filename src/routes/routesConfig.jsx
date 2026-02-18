@@ -6,6 +6,8 @@ import NewLoginContainer from '../components/auth/NewLogin/NewLoginContainer';
 import OpenBankingDashboard from '../pages/OpenBanking/OpenBankingDashboard';
 import Provisioning from '../pages/OpenBanking/Provisioning';
 import ConsentCenter from '../pages/OpenBanking/ConsentCenter';
+import SchemaRegistryPage from '../pages/SchemaRegistry/SchemaRegistryPage';
+import FieldsRegistryPage from '../pages/SchemaRegistry/FieldsRegistryPage';
 
 /**
  * Public routes that do not require authentication
@@ -46,6 +48,26 @@ export const privateRoutes = [
         name: 'Consent Center',
         path: 'consent-center',
         element: <ConsentCenter />
+      }
+    ]
+  },
+  {
+    name: 'Schema Registry',
+    path: 'schema-registry',
+    children: [
+      {
+        path: '',
+        element: <Navigate to="builder" replace />
+      },
+      {
+        name: 'Schema Builder',
+        path: 'builder',
+        element: <SchemaRegistryPage />
+      },
+      {
+        name: 'Fields Registry',
+        path: 'fields',
+        element: <FieldsRegistryPage />
       }
     ]
   },

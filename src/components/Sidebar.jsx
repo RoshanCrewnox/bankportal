@@ -72,7 +72,7 @@ const NewSidebar = ({ sidebarOpen, setSidebarOpen }) => {
           </div>
         </div>
 
-        <div className="overflow-auto grow px-4 pb-10">
+        <div className="overflow-auto grow pb-10">
           <ul className="flex flex-col gap-1">
             {filteredNavItems?.map((item) => {
               const isActive = item.hasSubmenu ? isSubActive(item.submenu) : isPathActive(item.pathname);
@@ -82,7 +82,7 @@ const NewSidebar = ({ sidebarOpen, setSidebarOpen }) => {
                 <li key={item.id} className="w-full">
                   <div
                     onClick={() => item.hasSubmenu ? toggleSubmenu(item.id) : navigate(item.pathname)}
-                    className={`flex items-center py-3 px-4 cursor-pointer rounded-xl transition-all duration-200 ${
+                    className={`flex items-center py-3 px-4 cursor-pointer rounded-md transition-all duration-200 ${
                       isActive
                         ? "bg-primary-orange text-white shadow-lg shadow-primary-orange/20"
                         : theme === "light"
@@ -110,7 +110,7 @@ const NewSidebar = ({ sidebarOpen, setSidebarOpen }) => {
                           <li key={subitem.id} className="w-full">
                             <Link
                               to={subitem.pathname}
-                              className={`py-2 px-4 rounded-lg flex items-center transition-all duration-200 group ${
+                              className={`py-2 px-4 rounded-md flex items-center transition-all duration-200 group ${
                                 isSubSubActive
                                   ? theme === 'light' ? "bg-orange-50 text-primary-orange" : "bg-white/5 text-primary-orange"
                                   : theme === 'light'
@@ -118,7 +118,7 @@ const NewSidebar = ({ sidebarOpen, setSidebarOpen }) => {
                                     : "text-gray-400 hover:text-primary-orange hover:bg-white/2"
                               }`}
                             >
-                              <div className={`w-1.5 h-1.5 rounded-full mr-3 transition-all ${
+                              <div className={`w-1.5 h-1.5 rounded-md mr-3 transition-all ${
                                 isSubSubActive ? "bg-primary-orange scale-125" : theme === 'light' ? "bg-gray-300 group-hover:bg-primary-orange" : "bg-gray-600 group-hover:bg-primary-orange"
                               }`} />
                               <span className="text-sm font-medium">{subitem.name}</span>
