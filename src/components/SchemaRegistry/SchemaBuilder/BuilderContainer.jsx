@@ -29,12 +29,11 @@ const BuilderContainer = ({
     fieldsArr?.forEach(f => {
       if (!f.name) return;
       const fieldObj = { type: f.type === 'add reference' ? 'reference' : f.type };
-      if (f.required) fieldObj.required = true;
+      
+      // Removed required, min, max as per request
+      
       if (f.unique) fieldObj.unique = true;
-      if (f.type === 'number') {
-        if (f.min !== undefined && f.min !== null && !isNaN(f.min)) fieldObj.min = f.min;
-        if (f.max !== undefined && f.max !== null && !isNaN(f.max)) fieldObj.max = f.max;
-      }
+      
       if (f.type === 'add reference') {
         if (f.ref) fieldObj.reference_schema = f.ref;
         if (f.refField) fieldObj.reference_field = f.refField;
@@ -59,12 +58,7 @@ const BuilderContainer = ({
 
   // Build the JSON schema object from form data
   const jsonSchema = useMemo(() => {
-    return {
-      cdm_defination: {
-        type: 'object',
-        properties: buildJsonStructure(fields)
-      }
-    };
+    return buildJsonStructure(fields);
   }, [fields]);
 
   const jsonString = useMemo(() => JSON.stringify(jsonSchema, null, 2), [jsonSchema]);
@@ -139,13 +133,22 @@ const BuilderContainer = ({
 
       {/* JSON Schema Drawer */}
       {showJson && (
-        <div className="fixed inset-0 z-50 flex justify-end" onClick={() => setShowJson(false)}>
+        <div
+          className="fixed inset-0 z-50 flex justify-end"
+          role="button"
+          tabIndex={0}
+          onClick={() => setShowJson(false)}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setShowJson(false); }}
+        >
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
           <div 
             className={`relative w-full max-w-xl h-full overflow-y-auto animate-in slide-in-from-right duration-300 shadow-2xl ${
               isDark ? 'bg-secondary-dark-bg' : 'bg-white'
             }`}
+            role="button"
+            tabIndex={0}
             onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => e.stopPropagation()}
           >
             {/* Drawer Header */}
             <div className={`sticky top-0 z-10 flex items-center justify-between px-6 py-4 border-b ${
@@ -201,19 +204,13 @@ const BuilderContainer = ({
                     <span className="text-gray-500 italic">No fields defined yet</span>
                   ) : (
                     fields.map((field, i) => (
-                      <div key={i} className="py-0.5">
+                      <div key={field.name || `field-${i}`} className="py-0.5">
                         <span className="text-gray-400">"</span>
                         <span className={isDark ? 'text-white' : 'text-gray-800'}>{field.name || 'unnamed'}</span>
                         <span className="text-gray-400">"</span>
                         <span className="text-gray-500">: </span>
                         <span className={typeColorMap[field.type] || 'text-gray-400'}>{field.type}</span>
-                        {field.required && <span className="text-red-400 ml-2 text-xs">• required</span>}
                         {field.unique && <span className="text-yellow-400 ml-2 text-xs">• unique</span>}
-                        {field.type === 'number' && (field.min !== undefined || field.max !== undefined) && (
-                          <span className="text-gray-500 ml-2 text-xs">
-                            [{field.min ?? '∞'} – {field.max ?? '∞'}]
-                          </span>
-                        )}
                         {field.type === 'add reference' && field.ref && (
                           <span className="text-pink-400/70 ml-2 text-xs">→ {field.ref}{field.refField ? `.${field.refField}` : ''}</span>
                         )}

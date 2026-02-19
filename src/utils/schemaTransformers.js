@@ -60,7 +60,8 @@ export const definitionToFields = (definition) => {
   if (!definition || !definition.properties) return [];
   
   return Object.entries(definition.properties).map(([name, props]) => {
-    const field = { 
+    const field = {
+      id: crypto.randomUUID(), 
       name, 
       type: props.type,
       required: !!props.required,

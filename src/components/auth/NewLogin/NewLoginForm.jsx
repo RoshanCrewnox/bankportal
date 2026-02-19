@@ -75,7 +75,7 @@ export default function NewLoginForm() {
               <label className="flex items-center text-sm text-white">
                 <input type="checkbox" className="mr-2" /> Remember Me
               </label>
-              <p className="text-white hover:text-orange-400 hover:underline font-medium cursor-pointer" onClick={() => navigate('/forgot-password')}>
+              <p className="text-white hover:text-orange-400 hover:underline font-medium cursor-pointer" role="button" tabIndex={0} onClick={() => navigate('/forgot-password')} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") navigate('/forgot-password'); }}>
                 Forgot Password?
               </p>
             </div>

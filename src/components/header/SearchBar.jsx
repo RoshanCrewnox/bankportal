@@ -42,11 +42,19 @@ const SearchBar = () => {
         >
           {searchResults.map((item, index) => (
             <div
-              key={index}
+              key={item.path}
+              role="button"
+              tabIndex={0}
               className={`px-4 py-3 cursor-pointer transition-colors flex flex-col ${
                 index === highlightedIndex ? "bg-primary-orange/10 text-primary-orange" : "text-gray-300 hover:bg-white/5"
               }`}
               onClick={() => handleSelect(item)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  handleSelect(item);
+                }
+              }}
               onMouseEnter={() => setHighlightedIndex(index)}
             >
               <span className="text-sm font-medium">{item.name}</span>

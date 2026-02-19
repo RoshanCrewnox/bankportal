@@ -1,9 +1,9 @@
-import { useState, useRef, useEffect } from 'react';
-import { ledgerData } from '../../services/consentMockData';
+import { useState, useRef, useEffect, useMemo } from 'react';
+import { ledgerData, auditLogs } from '../../services/consentMockData';
 
 export const useConsentCenter = () => {
     const [data, setData] = useState(ledgerData);
-    const [mainTab, setMainTab] = useState('Ledger');
+    const [mainTab, setMainTab] = useState('Audit');
     const [openAccordion, setOpenAccordion] = useState(null);
     const [searchTPP, setSearchTPP] = useState('');
     const [searchCustomerID, setSearchCustomerID] = useState('');
@@ -66,6 +66,28 @@ export const useConsentCenter = () => {
         setIsConfigOpen(false);
     };
 
+    const consentStats = useMemo(() => {
+        let total = 0;
+        let active = 0;
+        let pending = 0;
+        let revoked = 0;
+
+        data.forEach(customer => {
+            const allItems = [...customer.apis, ...customer.products, ...(customer.tpps || [])];
+            allItems.forEach(item => {
+                item.consents.forEach(consent => {
+                    total++;
+                    const status = consent.status.toLowerCase();
+                    if (status === 'active') active++;
+                    else if (status === 'pending') pending++;
+                    else if (status === 'revoked' || status === 'expired') revoked++;
+                });
+            });
+        });
+
+        return { total, active, pending, revoked };
+    }, [data]);
+
     const filteredLedger = data.filter(item => 
         item.customerId.toLowerCase().includes(searchCustomerID.toLowerCase()) &&
         (searchTPP === '' || item.apis.some(api => api.name.toLowerCase().includes(searchTPP.toLowerCase())) || 
@@ -102,6 +124,8 @@ export const useConsentCenter = () => {
         handleEnableSave,
         handleSaveConfig,
         filteredLedger,
-        filteredManagement
+        filteredManagement,
+        consentStats,
+        auditLogs
     };
 };

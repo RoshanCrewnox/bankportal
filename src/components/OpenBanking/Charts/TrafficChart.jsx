@@ -139,8 +139,8 @@ const TrafficChart = ({ theme, data, timeInterval = 'Min' }) => {
                     { label: 'Success', value: data.stats.success.value, color: 'border-green-400', dot: 'bg-green-400' },
                     { label: 'Error', value: data.stats.error.value, color: 'border-red-400', dot: 'bg-red-400' },
                     { label: 'Total', value: data.stats.total.value, color: 'border-blue-400', dot: 'bg-blue-400' }
-                ].map((stat, idx) => (
-                    <div key={idx} className={`rounded-xl p-3 border-l-4 ${stat.color} ${isDark ? 'bg-gray-700' : 'bg-gray-50'} transition-all hover:translate-x-1 border`}>
+                ].map((stat) => (
+                    <div key={stat.label} className={`rounded-xl p-3 border-l-4 ${stat.color} ${isDark ? 'bg-gray-700' : 'bg-gray-50'} transition-all hover:translate-x-1 border`}>
                         <div className="flex justify-between items-center mb-1">
                             <div className={`text-[12px] ${isDark ? 'text-white' : 'text-gray-900'} uppercase font-bold`}>{stat.label}</div>
                             <div className={`w-3 h-3 rounded-full ${stat.dot}`} />

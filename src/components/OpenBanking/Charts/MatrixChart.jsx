@@ -2,7 +2,10 @@ import React from 'react';
 import ReactApexChart from 'react-apexcharts';
 import { CHART_COLORS } from '../../../utils/chartConstants';
 
-const renderInteractiveLegend = (data, colors, theme, textPrimaryClass, layout = 'vertical') => {
+const DEFAULT_LABELS = [];
+const DEFAULT_DATA = [];
+
+const InteractiveLegend = ({ data, colors, textPrimaryClass, layout = 'vertical' }) => {
     if (!data || !Array.isArray(data) || data.length === 0) return null;
 
     const containerClasses = layout === 'horizontal'
@@ -12,7 +15,7 @@ const renderInteractiveLegend = (data, colors, theme, textPrimaryClass, layout =
     return (
         <div className={containerClasses}>
             {data.map((item, index) => (
-                <div key={index} className="flex items-center p-1 rounded cursor-pointer transition-all hover:bg-gray-100 dark:hover:bg-white/5">
+                <div key={item} className="flex items-center p-1 rounded cursor-pointer transition-all hover:bg-gray-100 dark:hover:bg-white/5">
                     <div className="w-3 h-3 rounded-full mr-2 shrink-0" style={{ backgroundColor: colors[index] || '#000' }}></div>
                     <span className={`text-[11px] font-medium truncate ${textPrimaryClass}`}>{item}</span>
                 </div>
@@ -21,7 +24,7 @@ const renderInteractiveLegend = (data, colors, theme, textPrimaryClass, layout =
     );
 };
 
-const MatrixChart = ({ theme, type = 'bar', title, labels = [], data = [], height = 350, legendPosition = 'right' }) => {
+const MatrixChart = ({ theme, type = 'bar', title, labels = DEFAULT_LABELS, data = DEFAULT_DATA, height = 350, legendPosition = 'right' }) => {
     const isDark = theme === 'dark';
     const textPrimaryClass = isDark ? 'text-gray-300' : 'text-gray-700';
 
@@ -150,7 +153,7 @@ const MatrixChart = ({ theme, type = 'bar', title, labels = [], data = [], heigh
                 </div>
                 {(type === 'pie' || type === 'donut') && (
                     <div className={isLegendBottom ? "w-full " : "w-1/3 min-w-[120px]"}>
-                        {renderInteractiveLegend(displayLabels, CHART_COLORS.multiSeries, isDark ? 'dark' : 'light', textPrimaryClass, isLegendBottom ? 'horizontal' : 'vertical')}
+                        <InteractiveLegend data={displayLabels} colors={CHART_COLORS.multiSeries} textPrimaryClass={textPrimaryClass} layout={isLegendBottom ? 'horizontal' : 'vertical'} />
                     </div>
                 )}
             </div>

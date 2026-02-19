@@ -75,3 +75,78 @@ export const ledgerData = [
         ]
     }
 ];
+
+export const auditLogs = [
+    {
+        id: "CONS-88219",
+        tpp: "Plaid",
+        type: "API",
+        details: "Accounts Information / GET",
+        lifecycle: "Data Accessed",
+        status: "Active",
+        validity: "15 days left",
+        duration: "90 Days",
+        requester: "Customer",
+        approver: "Admin"
+    },
+    {
+        id: "CONS-77123",
+        tpp: "TrueLayer",
+        type: "Product",
+        details: "Express Savings Account / 3 Methods",
+        lifecycle: "Requested",
+        status: "Pending",
+        validity: "-",
+        duration: "30 Days",
+        requester: "Customer",
+        approver: "System"
+    },
+    {
+        id: "CONS-99042",
+        tpp: "FintechOne",
+        type: "API",
+        details: "Payments Initiation / POST",
+        lifecycle: "Authorized",
+        status: "Active",
+        validity: "45 days left",
+        duration: "180 Days",
+        requester: "Customer",
+        approver: "Admin"
+    },
+    {
+        id: "CONS-44512",
+        tpp: "MoneyBeam",
+        type: "API",
+        details: "Identity Verification / GET",
+        lifecycle: "Rejected",
+        status: "Rejected",
+        validity: "0 days",
+        duration: "30 Days",
+        requester: "Customer",
+        approver: "Admin"
+    },
+    {
+        id: "CONS-22345",
+        tpp: "Plaid",
+        type: "Product",
+        details: "Global Student Account / All",
+        lifecycle: "Revoked",
+        status: "Revoked",
+        validity: "-",
+        duration: "1 Year",
+        requester: "User (Mobile App)",
+        approver: "User"
+    },
+    {
+        id: "CONS-11234",
+        tpp: "TrueLayer",
+        type: "API",
+        details: "Card Details API / GET",
+        lifecycle: "Expired",
+        status: "Expired",
+        validity: "Expired",
+        duration: "60 Days",
+        requester: "Customer",
+        approver: "Admin"
+    }
+];

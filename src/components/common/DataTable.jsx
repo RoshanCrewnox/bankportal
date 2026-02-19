@@ -2,11 +2,15 @@ import React, { useContext } from 'react';
 import { ThemeContext } from './ThemeContext';
 import { Eye, Pencil } from 'lucide-react';
 
+const EMPTY_HEADERS = [];
+const EMPTY_DATA = [];
+const EMPTY_ACTIONS = [];
+
 const DataTable = ({ 
-  headers = [], 
-  data = [], 
+  headers = EMPTY_HEADERS, 
+  data = EMPTY_DATA, 
   renderRow, 
-  actions = [],
+  actions = EMPTY_ACTIONS,
   emptyMessage = "No records found"
 }) => {
   const { theme } = useContext(ThemeContext);
@@ -17,8 +21,8 @@ const DataTable = ({
       <table className="w-full text-left">
         <thead>
           <tr className={`border-b ${isDark ? 'border-white/10 bg-darkbg' : 'border-gray-100 bg-gray-50'}`}>
-            {headers.map((header, index) => (
-              <th key={index} className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+            {headers.map((header) => (
+              <th key={header} className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 {header}
               </th>
             ))}
@@ -26,9 +30,9 @@ const DataTable = ({
         </thead>
         <tbody className={`divide-y ${isDark ? 'divide-white/5 bg-secondary-dark-bg/30' : 'divide-gray-100'}`}>
           {data.map((item, index) => (
-            <tr key={index} className="hover:bg-gray-50 dark:hover:bg-white/2 transition-colors group">
-              {renderRow ? renderRow(item, index) : Object.values(item).map((val, i) => (
-                <td key={i} className="px-6 py-4 text-sm text-gray-900 dark:text-gray-300">
+            <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-white/2 transition-colors group">
+              {renderRow ? renderRow(item, index) : Object.entries(item).map(([key, val]) => (
+                <td key={`${item.id}-${key}`} className="px-6 py-4 text-sm text-gray-900 dark:text-gray-300">
                   {val}
                 </td>
               ))}

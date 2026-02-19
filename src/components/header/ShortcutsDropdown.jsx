@@ -58,9 +58,9 @@ const ShortcutsDropdown = () => {
           </div>
 
           <div className="grid grid-cols-2">
-            {shortcuts.map((item, index) => (
+            {shortcuts.map((item) => (
               <Link
-                key={index}
+                key={item.path}
                 to={item.path}
                 className={`flex flex-col items-center justify-center p-6 border transition-all text-center group
                   ${theme === 'dark' 

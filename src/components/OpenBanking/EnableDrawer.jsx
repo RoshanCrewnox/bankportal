@@ -2,6 +2,15 @@ import React, { useState } from 'react';
 import { Cpu, X } from 'lucide-react';
 import CustomSelect from './CustomSelect';
 
+const InputCard = ({ label, children }) => (
+    <div className="space-y-1.5 relative">
+        <p className="text-[10px] text-gray-400 uppercase font-black tracking-widest ml-1">{label}</p>
+        <div className="w-full p-3 bg-gray-50 dark:bg-darkbg border border-gray-100 dark:border-white/5 rounded-xl transition-all font-bold text-gray-800 dark:text-gray-100">
+            {children}
+        </div>
+    </div>
+);
+
 const EnableDrawer = ({ isOpen, onClose, item, onSave }) => {
     const [formData, setFormData] = useState({
         duration: '90 Days',
@@ -17,24 +26,26 @@ const EnableDrawer = ({ isOpen, onClose, item, onSave }) => {
 
     if (!isOpen) return null;
 
-    const InputCard = ({ label, children }) => (
-        <div className="space-y-1.5 relative">
-            <p className="text-[10px] text-gray-400 uppercase font-black tracking-widest ml-1">{label}</p>
-            <div className="w-full p-3 bg-gray-50 dark:bg-darkbg border border-gray-100 dark:border-white/5 rounded-xl transition-all font-bold text-gray-800 dark:text-gray-100">
-                {children}
-            </div>
-        </div>
-    );
-
     return (
         <div className="fixed inset-0 z-100 flex justify-end overflow-hidden animate-in fade-in duration-300">
-            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
-            <div 
+            <div
+                className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+                onClick={onClose}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onClose(); }}
+                role="button"
+                tabIndex={0}
+                aria-label="Close drawer"
+            />
+            <div
                 className="relative w-full max-w-xl bg-white dark:bg-secondary-dark-bg h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-500"
                 onClick={(e) => {
                     e.stopPropagation();
                     setOpenDrawerDropdown(null);
                 }}
+                onKeyDown={(e) => {
+                    if (e.key === 'Escape') setOpenDrawerDropdown(null);
+                }}
+                role="presentation"
             >
                 {/* Header */}
                 <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-white/5 bg-gray-50/50 dark:bg-dark-input/20">

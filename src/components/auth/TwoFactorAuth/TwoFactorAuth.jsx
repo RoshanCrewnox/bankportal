@@ -8,7 +8,7 @@ export default function TwoFactorAuth() {
   const navigate = useNavigate();
   const location = useLocation();
   const [timeLeft, setTimeLeft] = useState(60);
-  const [isResendDisabled, setIsResendDisabled] = useState(false);
+  const isResendDisabled = timeLeft > 0;
 
   const handleOtpChange = (e, index) => {
     const newOtp = otp.split('');
@@ -74,17 +74,12 @@ export default function TwoFactorAuth() {
     if (timeLeft === 0) {
       alert("New OTP sent successfully!");
       setTimeLeft(60);
-      setIsResendDisabled(true);
     }
   };
 
   useEffect(() => {
-    let timer;
-    if (timeLeft > 0) {
-      timer = setInterval(() => setTimeLeft((prev) => prev - 1), 1000);
-    } else {
-      setIsResendDisabled(false);
-    }
+    if (timeLeft <= 0) return;
+    const timer = setInterval(() => setTimeLeft((prev) => prev - 1), 1000);
     return () => clearInterval(timer);
   }, [timeLeft]);
 
@@ -103,16 +98,16 @@ export default function TwoFactorAuth() {
 
           {/* OTP Input Field */}
           <div className="flex justify-center space-x-2">
-            {Array.from({ length: 6 }, (_, index) => (
+            {Array.from({ length: 6 }, (_, i) => `otp-input-${i}`).map((id, index) => (
               <input
-                key={index}
+                key={id}
                 type="text"
                 maxLength={1}
                 className="w-12 h-12 text-center form-control text-lg border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={otp[index] || ""}
                 onChange={(e) => handleOtpChange(e, index)}
                 onPaste={index === 0 ? handlePaste : undefined}
-                id={`otp-input-${index}`}
+                id={id}
                 required
               />
             ))}

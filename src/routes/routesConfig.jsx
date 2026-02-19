@@ -5,6 +5,7 @@ import { Navigate } from 'react-router-dom';
 import NewLoginContainer from '../components/auth/NewLogin/NewLoginContainer';
 import OpenBankingDashboard from '../pages/OpenBanking/OpenBankingDashboard';
 import Provisioning from '../pages/OpenBanking/Provisioning';
+import TppOnboardingPage from '../pages/OpenBanking/TppOnboardingPage';
 import ConsentCenter from '../pages/OpenBanking/ConsentCenter';
 import SchemaRegistryPage from '../pages/SchemaRegistry/SchemaRegistryPage';
 import FieldsRegistryPage from '../pages/SchemaRegistry/FieldsRegistryPage';
@@ -43,6 +44,11 @@ export const privateRoutes = [
         name: 'Provisioning',
         path: 'provisioning',
         element: <Provisioning />
+      },
+      {
+        name: 'TPP Onboarding',
+        path: 'tpp-onboarding',
+        element: <TppOnboardingPage />
       },
       {
         name: 'Consent Center',

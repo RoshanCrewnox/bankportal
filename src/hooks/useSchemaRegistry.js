@@ -4,7 +4,7 @@ import { fieldsToDefinition, definitionToFields } from '../utils/schemaTransform
 const STORAGE_KEY = 'schema_registry_schemas';
 
 const INITIAL_FIELDS = [
-  { name: 'id', type: 'number', required: true, unique: true }
+  { id: crypto.randomUUID(), name: 'id', type: 'number', required: true, unique: true }
 ];
 
 const INITIAL_SCHEMA = {
@@ -79,7 +79,7 @@ export const useSchemaRegistry = () => {
   };
 
   const addNestedField = (path = []) => {
-    const newField = { name: '', type: 'string', required: false };
+    const newField = { id: crypto.randomUUID(), name: '', type: 'string', required: false };
     if (path.length === 0) {
       setFields(prev => [...prev, newField]);
     } else {

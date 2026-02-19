@@ -22,9 +22,15 @@ const PrivateLayout = () => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
     };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll, { passive: true });
   }, []);
+
+  const handleOverlayKeyDown = (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      setSidebarOpen(false);
+    }
+  };
 
   return (
     <div className={`layout-wrapper layout-content-navbar ${theme === 'dark' ? 'dark' : ''} h-screen overflow-hidden`}>
@@ -42,7 +48,10 @@ const PrivateLayout = () => {
         {sidebarOpen && (
           <div
             className="fixed inset-0 bg-black opacity-50 z-30 lg:hidden"
+            role="button"
+            tabIndex={0}
             onClick={() => setSidebarOpen(false)}
+            onKeyDown={handleOverlayKeyDown}
           />
         )}
 

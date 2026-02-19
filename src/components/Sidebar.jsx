@@ -59,7 +59,10 @@ const NewSidebar = ({ sidebarOpen, setSidebarOpen }) => {
               <img
                 src={theme === "dark" ? ZeroTeq : ZeroTeqLogo}
                 alt="ZeroTeq Logo"
+                role="button"
+                tabIndex={0}
                 onClick={() => navigate("/")}
+                onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") navigate("/"); }}
                 className="w-full cursor-pointer object-contain transition-transform hover:scale-105"
               />
             </div>
@@ -81,7 +84,10 @@ const NewSidebar = ({ sidebarOpen, setSidebarOpen }) => {
               return (
                 <li key={item.id} className="w-full">
                   <div
+                    role="button"
+                    tabIndex={0}
                     onClick={() => item.hasSubmenu ? toggleSubmenu(item.id) : navigate(item.pathname)}
+                    onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); item.hasSubmenu ? toggleSubmenu(item.id) : navigate(item.pathname); } }}
                     className={`flex items-center py-3 px-4 cursor-pointer rounded-md transition-all duration-200 ${
                       isActive
                         ? "bg-primary-orange text-white shadow-lg shadow-primary-orange/20"

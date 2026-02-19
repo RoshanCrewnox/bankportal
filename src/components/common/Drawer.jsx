@@ -9,7 +9,14 @@ const Drawer = ({ isOpen, onClose, title, children, width = '600px' }) => {
 
   return (
     <>
-      <div className="drawer-overlay" onClick={onClose}></div>
+      <div
+        className="drawer-overlay"
+        role="button"
+        tabIndex={0}
+        aria-label="Close drawer"
+        onClick={onClose}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onClose(); }}
+      ></div>
       <div className={`drawer ${theme == "light" ? "bg-white text-back" : "bg-secondary-dark-bg"}  ${isOpen ? 'drawer-open' : ''}`} style={{ width }}>
         <div className={`drawer-header ${theme == "dark" ? " border-b-2 border-b-[#2d2e3a]" : ""} `}>
           <h2 className="version-history-title text-gray-800 dark:text-gray-100">

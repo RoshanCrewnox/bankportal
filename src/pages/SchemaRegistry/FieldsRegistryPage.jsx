@@ -1,24 +1,32 @@
-import React, { useContext, useState, useEffect, useMemo } from 'react';
-import { Database, Plus, Search, Filter, Eye, Pencil } from 'lucide-react';
+import React, { useContext, useState, useReducer, useEffect, useMemo } from 'react';
+import { Database, Plus, Search, Filter, Eye, Pencil, Layers } from 'lucide-react';
 import { ThemeContext } from '../../components/common/ThemeContext';
 import Button from '../../components/common/Button';
 import DataTable from '../../components/common/DataTable';
 import AddFieldsForm from '../../components/SchemaRegistry/FieldsRegistry/AddFieldsForm';
 import FieldDetailsDrawer from '../../components/SchemaRegistry/FieldsRegistry/FieldDetailsDrawer';
 
+const initialDrawerState = { isOpen: false, selectedField: null, mode: 'view' };
+
+function drawerReducer(state, action) {
+  switch (action.type) {
+    case 'OPEN':
+      return { isOpen: true, selectedField: action.payload.field, mode: action.payload.mode };
+    case 'CLOSE':
+      return { ...state, isOpen: false };
+    default:
+      return state;
+  }
+}
+
 const FieldsRegistryPage = () => {
   const { theme } = useContext(ThemeContext);
   const isDark = theme === 'dark';
-  const [view, setView] = useState('LIST'); // LIST, ADD_FIELDS
+  const [view, setView] = useState('LIST');
   const [fields, setFields] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  
-  // Drawer state
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [selectedField, setSelectedField] = useState(null);
-  const [drawerMode, setDrawerMode] = useState('view');
+  const [drawerState, dispatchDrawer] = useReducer(drawerReducer, initialDrawerState);
 
-  // Load fields from localStorage
   const loadFields = () => {
     const stored = JSON.parse(localStorage.getItem('CDM_FIELD_REGISTRY') || '[]');
     setFields(stored);
@@ -97,9 +105,7 @@ const FieldsRegistryPage = () => {
   );
 
   const openDrawer = (field, mode) => {
-    setSelectedField(field);
-    setDrawerMode(mode);
-    setDrawerOpen(true);
+    dispatchDrawer({ type: 'OPEN', payload: { field, mode } });
   };
 
   const actions = [
@@ -127,14 +133,12 @@ const FieldsRegistryPage = () => {
 
   return (
     <div className={`space-y-6 animate-in fade-in duration-500 pb-10 ${isDark ? 'text-white' : 'text-gray-800'}`}>
-      {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">Fields Registry</h1>
           <p className="text-gray-500 dark:text-gray-400 text-sm">Manage reusable data fields across your schema ecosystem.</p>
         </div>
         <div className="flex items-center gap-3">
-          {/* Consolidated Search Bar */}
           <div className={`flex items-center gap-2 px-3 py-2 rounded-lg border min-w-[280px] ${isDark ? 'bg-white/5 border-white/10' : 'bg-gray-50 border-gray-200 shadow-sm'}`}>
             <Search size={16} className="text-gray-400" />
             <input 
@@ -145,6 +149,9 @@ const FieldsRegistryPage = () => {
               className="bg-transparent border-none outline-none text-sm w-full"
             />
           </div>
+          <Button variant="secondary" icon={<Layers size={18} />} onClick={() => console.log('Grouping clicked')}>
+            Grouping
+          </Button>
           <Button variant="primary" icon={<Plus size={18} />} onClick={() => setView('ADD_FIELDS')}>
             Add Fields
           </Button>
@@ -169,12 +176,12 @@ const FieldsRegistryPage = () => {
         </div>
       )}
 
-      {/* Field Configuration Drawer */}
       <FieldDetailsDrawer 
-        isOpen={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
-        field={selectedField}
-        mode={drawerMode}
+        key={drawerState.selectedField?.field_uuid}
+        isOpen={drawerState.isOpen}
+        onClose={() => dispatchDrawer({ type: 'CLOSE' })}
+        field={drawerState.selectedField}
+        mode={drawerState.mode}
         onUpdate={handleUpdateField}
       />
     </div>

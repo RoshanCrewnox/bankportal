@@ -67,7 +67,7 @@ const FlowDesigner = ({ schema, fields, onBack, isDark }) => {
                     const ty = 50 + (Math.sin(angle) * r) / (window.innerHeight/3);
                     return (
                         <line 
-                            key={i}
+                            key={key}
                             x1="50%" y1="50%" 
                             x2={`${50 + Math.cos(angle) * 30}%`} y2={`${50 + Math.sin(angle) * 30}%`} 
                             stroke={isDark ? '#4f46e5' : '#6366f1'} 

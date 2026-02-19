@@ -114,9 +114,9 @@ const UserDropdown = () => {
             {[
               { icon: User, label: 'My Profile', path: '/profile' },
               { icon: Settings, label: 'Settings', path: '/cx/settings' },
-            ].map((item, idx) => (
+            ].map((item) => (
               <Link
-                key={idx}
+                key={item.path}
                 to={item.path}
                 onClick={() => setIsOpen(false)}
                 className={`w-full px-6 py-2.5 flex items-center transition-colors text-sm group

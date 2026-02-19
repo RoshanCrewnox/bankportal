@@ -17,22 +17,6 @@ const ProtectedRoute = ({ children }) => {
   return children;
 };
 
-/**
- * Recursive function to render routes from a configuration array
- */
-const renderRoutes = (routes) => {
-  return routes.map((route, index) => (
-    <Route 
-      key={index} 
-      path={route.path} 
-      index={route.index}
-      element={route.element}
-    >
-      {route.children && renderRoutes(route.children)}
-    </Route>
-  ));
-};
-
 function App() {
   return (
     <ErrorBoundary>
@@ -41,7 +25,14 @@ function App() {
           <Router>
             <Routes>
               {/* Public routes */}
-              {renderRoutes(publicRoutes)}
+              {publicRoutes.map((route) => (
+                <Route
+                  key={route.path}
+                  path={route.path}
+                  index={route.index}
+                  element={route.element}
+                />
+              ))}
 
               {/* Protected routes */}
               <Route path="/" element={
@@ -49,7 +40,23 @@ function App() {
                   <PrivateLayout />
                 </ProtectedRoute>
               }>
-                {renderRoutes(privateRoutes)}
+                {privateRoutes.map((route) => (
+                  <Route
+                    key={route.path ?? route.name}
+                    path={route.path}
+                    index={route.index}
+                    element={route.element}
+                  >
+                    {route.children && route.children.map((child) => (
+                      <Route
+                        key={child.path ?? child.name}
+                        path={child.path}
+                        index={child.index}
+                        element={child.element}
+                      />
+                    ))}
+                  </Route>
+                ))}
               </Route>
             </Routes>
             <Toaster />
