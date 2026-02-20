@@ -1,4 +1,4 @@
-import React, { lazy } from 'react';
+import React from 'react';
 import { Navigate } from 'react-router-dom';
 
 // Layouts
@@ -9,6 +9,7 @@ import TppOnboardingPage from '../pages/OpenBanking/TppOnboardingPage';
 import ConsentCenter from '../pages/OpenBanking/ConsentCenter';
 import SchemaRegistryPage from '../pages/SchemaRegistry/SchemaRegistryPage';
 import FieldsRegistryPage from '../pages/SchemaRegistry/FieldsRegistryPage';
+import SchemaFlowPage from '../pages/SchemaRegistry/SchemaFlowPage';
 
 /**
  * Public routes that do not require authentication
@@ -74,6 +75,11 @@ export const privateRoutes = [
         name: 'Fields Registry',
         path: 'fields',
         element: <FieldsRegistryPage />
+      },
+      {
+        name: 'Schema Flow',
+        path: 'flow',
+        element: <SchemaFlowPage />
       }
     ]
   },

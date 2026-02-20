@@ -93,7 +93,7 @@ const BuilderContainer = ({
           </button>
           <div>
             <h2 className="text-lg font-bold">New Schema Definition</h2>
-            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">
+            <p className="text-[10px] text-gray-500 font-bold tracking-widest">
               Configure CDM Structure
             </p>
           </div>

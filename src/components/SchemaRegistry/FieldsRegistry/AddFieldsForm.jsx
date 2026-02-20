@@ -30,7 +30,7 @@ const AddFieldsForm = ({ onSave, onCancel }) => {
       <div className={`flex items-center justify-between border-b pb-4 ${isDark ? 'border-white/5' : 'border-gray-100'}`}>
         <div>
           <h2 className={`text-xl font-bold ${isDark ? 'text-white tracking-tight' : 'text-gray-900 tracking-tight'}`}>Register Fields from CDM</h2>
-          <p className="text-[10px] font-bold text-gray-500 mt-0.5 uppercase tracking-wide">Configure multi-field registration sources</p>
+          <p className="text-xs font-semibold text-gray-500 mt-0.5 tracking-wide">Configure multi-field registration sources</p>
         </div>
         <button onClick={onCancel} className={`flex items-center gap-2 px-4 py-2 border rounded-xl transition-all text-xs font-bold ${
           isDark ? 'bg-white/5 border-white/10 text-gray-400 hover:text-white hover:bg-white/10' : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100 hover:text-gray-900 shadow-sm'
@@ -48,7 +48,7 @@ const AddFieldsForm = ({ onSave, onCancel }) => {
                 isDark ? 'bg-secondary-dark-bg/40 border-white/5 hover:border-white/10' : 'bg-white border-gray-200 hover:border-gray-300 shadow-sm'
               }`}>
                 <div className="flex-1 space-y-1.5">
-                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block ml-1">Source CDM</label>
+                  <label className="text-xs font-semibold text-gray-400 tracking-wider block ml-1">Source CDM</label>
                   <select 
                     value={item.cdm_uuid} 
                     onChange={(e) => handleCdmChange(index, e.target.value)}
@@ -69,7 +69,7 @@ const AddFieldsForm = ({ onSave, onCancel }) => {
                 </div>
 
                 <div className="flex-2 space-y-1.5">
-                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block ml-1">
+                  <label className="text-xs font-semibold text-gray-400 tracking-wider block ml-1">
                     Select Fields {item.field_names.length > 0 && `(${item.field_names.length})`}
                   </label>
                   <MultiSelectDropdown
@@ -99,7 +99,7 @@ const AddFieldsForm = ({ onSave, onCancel }) => {
           
           <button 
             onClick={handleAddMore}
-            className={`w-full py-4 border-2 border-dashed rounded-2xl transition-all flex items-center justify-center gap-2.5 text-[10px] font-bold uppercase tracking-wide ${
+            className={`w-full py-4 border-2 border-dashed rounded-2xl transition-all flex items-center justify-center gap-2.5 text-xs font-semibold tracking-wide ${
               isDark ? 'border-white/5 text-gray-500 hover:border-primary-orange/30 hover:bg-primary-orange/5 hover:text-primary-orange' : 'border-gray-200 text-gray-400 hover:border-primary-orange/20 hover:bg-primary-orange/5 hover:text-primary-orange'
             }`}
           >
@@ -110,8 +110,8 @@ const AddFieldsForm = ({ onSave, onCancel }) => {
         {queuedFields.length > 0 && (
           <div className="animate-in fade-in slide-in-from-top-2 duration-300 pt-6 space-y-4">
             <div className="flex items-baseline justify-between border-b pb-2 border-primary-orange/10 mx-1">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-primary-orange">Selected Fields</h3>
-              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wide">
+              <h3 className="text-xs font-bold tracking-wider text-primary-orange">Selected Fields</h3>
+              <span className="text-xs font-semibold text-gray-400 tracking-wide">
                 {queuedFields.length} field{queuedFields.length > 1 ? 's' : ''} total
               </span>
             </div>
@@ -121,18 +121,18 @@ const AddFieldsForm = ({ onSave, onCancel }) => {
                 <table className="w-full text-left border-collapse">
                   <thead>
                     <tr className={`${isDark ? 'bg-white/5' : 'bg-gray-50'} border-b border-gray-100 dark:border-white/5`}>
-                      <th className="px-6 py-4 text-[9px] font-bold uppercase tracking-wider text-gray-400">CDM Source</th>
-                      <th className="px-6 py-4 text-[9px] font-bold uppercase tracking-wider text-gray-400">Field Identifier</th>
-                      <th className="px-6 py-4 text-[9px] font-bold uppercase tracking-wider text-gray-400 text-right">Data Type</th>
+                      <th className="px-6 py-4 text-xs font-bold tracking-wider text-gray-400">CDM Source</th>
+                      <th className="px-6 py-4 text-xs font-bold tracking-wider text-gray-400">Field Identifier</th>
+                      <th className="px-6 py-4 text-xs font-bold tracking-wider text-gray-400 text-right">Data Type</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100 dark:divide-white/5">
                     {queuedFields.map((q, i) => (
-                      <tr key={i} className="text-[11px] group hover:bg-white/40 dark:hover:bg-white/2 transition-colors">
-                        <td className="px-6 py-4 text-gray-400 dark:text-gray-400 font-bold uppercase tracking-tight w-1/3">{q.cdm}</td>
-                        <td className="px-6 py-4 font-bold text-gray-800 dark:text-white uppercase tracking-wide">{q.field}</td>
+                      <tr key={i} className="text-xs group hover:bg-white/40 dark:hover:bg-white/2 transition-colors">
+                        <td className="px-6 py-4 text-gray-400 dark:text-gray-400 font-semibold tracking-tight w-1/3">{q.cdm}</td>
+                        <td className="px-6 py-4 font-semibold text-gray-800 dark:text-white tracking-wide">{q.field}</td>
                         <td className="px-6 py-4 text-right">
-                          <span className="font-bold text-blue-500 dark:text-blue-400 uppercase tracking-wider text-[10px]">
+                          <span className="font-bold text-blue-500 dark:text-blue-400 tracking-wider text-xs">
                             {q.type}
                           </span>
                         </td>
@@ -151,7 +151,7 @@ const AddFieldsForm = ({ onSave, onCancel }) => {
           variant="primary" 
           icon={<Save size={16} />} 
           onClick={handleFinalSave}
-          className="px-6 py-3.5 text-[10px] font-bold uppercase tracking-wider shadow-[0_8px_20px_rgba(237,127,24,0.25)] hover:shadow-[0_12px_30px_rgba(237,127,24,0.35)] transition-all active:scale-95 rounded-xl"
+          className="px-6 py-3.5 text-xs font-bold tracking-wider shadow-[0_8px_20px_rgba(237,127,24,0.25)] hover:shadow-[0_12px_30px_rgba(237,127,24,0.35)] transition-all active:scale-95 rounded-xl"
           disabled={queuedFields.length === 0}
         >
           Register Selected Fields

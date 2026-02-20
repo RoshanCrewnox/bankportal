@@ -21,13 +21,13 @@ const SchemaCard = ({ schema, onEdit, onView, onDelete, isDark }) => {
             <h3 className={`font-bold text-lg leading-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>
               {schema.cdm_name || 'Untitled Schema'}
             </h3>
-            <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <span className="text-xs font-medium text-gray-500 tracking-wider">
               {schema.cdm_id || 'NO ID'} • v{schema.version}
             </span>
           </div>
         </div>
         
-        <div className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase ${
+        <div className={`px-2 py-1 rounded-md text-xs font-bold ${
           schema.status === 'Active' 
             ? 'bg-green-500/10 text-green-500' 
             : 'bg-yellow-500/10 text-yellow-500'

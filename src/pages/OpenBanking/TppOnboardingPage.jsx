@@ -45,7 +45,7 @@ const TppOnboardingPage = () => {
             </button>
             <div>
               <h1 className="text-2xl font-black text-gray-800 dark:text-white tracking-tight">TPP Onboarding Flow</h1>
-              <p className="text-gray-500 dark:text-gray-400 text-xs font-medium uppercase tracking-wider mt-0.5">Setup new provider credentials & permissions</p>
+              <p className="text-gray-500 dark:text-gray-400 text-xs font-medium tracking-wider mt-0.5">Setup new provider credentials & permissions</p>
             </div>
           </div>
         </div>
@@ -108,7 +108,7 @@ const TppOnboardingPage = () => {
               <button
                 onClick={handlePrev}
                 style={{ visibility: currentStep === 1 ? 'hidden' : 'visible' }}
-                className="flex items-center gap-2.5 px-6 py-3 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-700 dark:text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-sm hover:shadow-md transition-all active:scale-95"
+                className="flex items-center gap-2.5 px-6 py-3 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-700 dark:text-white rounded-xl font-black text-[10px] tracking-widest shadow-sm hover:shadow-md transition-all active:scale-95"
               >
                 <ArrowLeft size={16} />
                 Back
@@ -116,7 +116,7 @@ const TppOnboardingPage = () => {
               
               <button
                 onClick={handleNext}
-                className="flex items-center gap-2.5 px-8 py-3 bg-primary-orange hover:bg-primary-orange/90 text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-[0_8px_20_rgba(237,127,24,0.25)] hover:shadow-[0_12px_30px_rgba(237,127,24,0.35)] transition-all active:scale-95"
+                className="flex items-center gap-2.5 px-8 py-3 bg-primary-orange hover:bg-primary-orange/90 text-white rounded-xl font-black text-[10px] tracking-widest shadow-[0_8px_20_rgba(237,127,24,0.25)] hover:shadow-[0_12px_30px_rgba(237,127,24,0.35)] transition-all active:scale-95"
               >
                 {currentStep === 4 ? 'Complete Onboarding' : 'Next Step'}
                 {currentStep < 4 && <ArrowRight size={16} />}

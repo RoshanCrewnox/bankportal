@@ -45,6 +45,11 @@ export const sidebarItems = [
         name: "Fields Registry",
         pathname: "/schema-registry/fields",
       },
+      {
+        id: "sr-flow",
+        name: "Schema Flow",
+        pathname: "/schema-registry/flow",
+      },
     ],
   },
 ];

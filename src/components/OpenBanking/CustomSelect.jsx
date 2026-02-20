@@ -1,7 +1,7 @@
 import React, { useId, useState } from 'react';
 import { ChevronDown, Search, Check } from 'lucide-react';
 
-const CustomSelect = ({ label, value, options, onChange, searchable = false, isOpen, onToggle }) => {
+const CustomSelect = ({ label, value, options, onChange, searchable = false, isOpen, onToggle, disabled = false }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const listboxId = useId();
     
@@ -10,28 +10,30 @@ const CustomSelect = ({ label, value, options, onChange, searchable = false, isO
     );
 
     return (
-        <div className="space-y-1.5 relative">
-            <p className="text-[10px] text-gray-400 uppercase font-black tracking-widest ml-1">{label}</p>
+        <div className={`space-y-1.5 relative ${disabled ? 'opacity-60 grayscale-[0.5]' : ''}`}>
+            {label && <p className="text-xs text-gray-400 font-semibold tracking-wide ml-1">{label}</p>}
             <div 
                 role="combobox"
-                tabIndex={0}
+                tabIndex={disabled ? -1 : 0}
                 aria-expanded={isOpen}
                 aria-controls={listboxId}
                 onClick={(e) => {
+                    if (disabled) return;
                     e.stopPropagation();
                     onToggle();
                 }}
                 onKeyDown={(e) => {
+                    if (disabled) return;
                     if (e.key === 'Enter' || e.key === ' ') {
                         e.preventDefault();
                         e.stopPropagation();
                         onToggle();
                     }
                 }}
-                className="w-full p-3 bg-gray-50 dark:bg-darkbg border border-gray-100 dark:border-white/5 rounded-xl cursor-pointer flex items-center justify-between group hover:border-primary-orange/30 transition-all font-bold text-gray-800 dark:text-gray-100"
+                className={`w-full p-3 bg-gray-50 dark:bg-darkbg border border-gray-100 dark:border-white/5 rounded-xl flex items-center justify-between group transition-all font-bold text-gray-800 dark:text-gray-100 ${disabled ? 'cursor-not-allowed' : 'cursor-pointer hover:border-primary-orange/30'}`}
             >
                 <span className="text-sm">{value}</span>
-                <ChevronDown className={`w-4 h-4 text-gray-400 group-hover:text-primary-orange transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                {!disabled && <ChevronDown className={`w-4 h-4 text-gray-400 group-hover:text-primary-orange transition-transform ${isOpen ? 'rotate-180' : ''}`} />}
             </div>
 
             {isOpen && (

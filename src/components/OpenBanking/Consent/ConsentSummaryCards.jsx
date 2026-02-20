@@ -14,7 +14,7 @@ const ConsentSummaryCards = ({ stats, isDark }) => {
       {cards.map((card, i) => (
         <div key={i} className={`p-5 rounded-xl border ${isDark ? 'bg-secondary-dark-bg/40 border-white/5' : 'bg-white border-gray-100 shadow-sm'} flex flex-col gap-3 transition-all hover:scale-[1.02] hover:shadow-md`}>
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{card.label}</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400 font-semibold">{card.label}</span>
             <div className={`${card.color}`}>
               {card.icon}
             </div>

@@ -42,13 +42,13 @@ const ConsentCenter = () => {
                 </div>
                 <button 
                     onClick={() => setShowLedger(!showLedger)}
-                    className={`flex items-center gap-2 px-5 py-2.5 rounded-xl border text-xs font-bold transition-all active:scale-95 ${
+                    className={`flex items-center gap-2 px-5 py-2.5 rounded-xl border text-sm font-semibold transition-all active:scale-95 ${
                         showLedger 
                         ? 'bg-primary-orange text-white border-primary-orange shadow-lg hover:brightness-110' 
                         : 'bg-white dark:bg-secondary-dark-bg border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-300 hover:border-primary-orange hover:text-primary-orange shadow-sm'
                     }`}
                 >
-                    {showLedger ? <ArrowLeft size={14} /> : <List size={14} />}
+                    {showLedger ? <ArrowLeft size={16} /> : <List size={16} />}
                     {showLedger ? 'Back to Audit' : 'Consent Ledger'}
                 </button>
             </div>
@@ -71,7 +71,7 @@ const ConsentCenter = () => {
             ) : (
                 <div className="space-y-6 animate-in fade-in duration-500">
                     <div className={`flex gap-1 p-1 rounded-lg ${theme === 'dark' ? 'bg-darkbg' : 'bg-gray-100'} w-fit`}>
-                        {['Audit', 'Consent Mngts'].map((tab) => (
+                        {['Audit', 'Consent management'].map((tab) => (
                             <button
                                 key={tab}
                                 onClick={() => setMainTab(tab)}
@@ -106,7 +106,13 @@ const ConsentCenter = () => {
                     )}
                 </div>
             )}
-            <EnableDrawer isOpen={drawerState.isOpen} onClose={() => setDrawerState({ isOpen: false, item: null })} item={drawerState.item} onSave={handleEnableSave} />
+            <EnableDrawer 
+                isOpen={drawerState.isOpen} 
+                onClose={() => setDrawerState({ isOpen: false, item: null })} 
+                item={drawerState.item} 
+                onSave={handleEnableSave} 
+                config={config}
+            />
         </div>
     );
 };

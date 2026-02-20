@@ -7,7 +7,7 @@ import { ThemeContext } from '../../common/ThemeContext';
 const SectionHeader = ({ icon: Icon, title, isDark }) => (
   <div className={`flex items-center gap-2 mb-4 mt-6 first:mt-0 pb-2 border-b ${isDark ? 'border-white/5' : 'border-gray-100'}`}>
     <Icon size={14} className="text-primary-orange" />
-    <span className={`text-xs font-bold uppercase ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>{title}</span>
+    <span className={`text-sm font-bold ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>{title}</span>
   </div>
 );
 
@@ -44,7 +44,7 @@ const FieldDetailsDrawer = ({ isOpen, onClose, field, mode = 'view', onUpdate })
   const inputClass = `w-full border rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-primary-orange outline-none disabled:opacity-50 disabled:cursor-not-allowed transition-all ${
     isDark ? 'bg-secondary-dark-bg/50 border-white/10 text-white' : 'bg-gray-50 border-gray-200 text-gray-900 shadow-sm'
   }`;
-  const labelClass = `text-[11px] font-bold uppercase tracking-wider block mb-1.5 ${isDark ? 'text-gray-400' : 'text-gray-500'}`;
+  const labelClass = `text-xs font-semibold tracking-wider block mb-1.5 ${isDark ? 'text-gray-400' : 'text-gray-500'}`;
 
   return (
     <Drawer isOpen={isOpen} onClose={onClose} title={`${isEdit ? 'Edit' : 'View'} Field Details`} width="800px">

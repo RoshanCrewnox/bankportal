@@ -26,7 +26,7 @@ const ConsentManagement = ({
         <div className="relative">
           <button 
             onClick={() => setIsConfigOpen(!isConfigOpen)} 
-            className={`flex items-center gap-2 px-6 py-2 rounded-lg border text-sm font-bold transition-all ${isConfigOpen ? 'bg-primary-orange text-white border-primary-orange shadow-lg hover:brightness-110' : 'bg-primary-orange text-white border-primary-orange hover:brightness-110'}`}
+            className={`flex items-center gap-2 px-6 py-2 rounded-lg border text-sm font-semibold transition-all ${isConfigOpen ? 'bg-primary-orange text-white border-primary-orange shadow-lg hover:brightness-110' : 'bg-primary-orange text-white border-primary-orange hover:brightness-110'}`}
           >
             Configuration
           </button>
@@ -51,7 +51,7 @@ const ConsentManagement = ({
                   onChange={(val) => setConfig({...config, regions: val})} 
                 />
               </div>
-              <button onClick={handleSaveConfig} className="w-full py-3 bg-primary-orange text-white rounded-xl text-sm font-bold shadow-lg shadow-primary-orange/20 hover:brightness-110 active:scale-[0.98] transition-all uppercase tracking-widest">Save Configuration</button>
+              <button onClick={handleSaveConfig} className="w-full py-3 bg-primary-orange text-white rounded-xl text-sm font-semibold shadow-lg shadow-primary-orange/20 hover:brightness-110 active:scale-[0.98] transition-all tracking-wide">Save Configuration</button>
             </div>
           )}
         </div>
@@ -76,18 +76,18 @@ const ConsentManagement = ({
               <div role="button" tabIndex={0} onClick={() => toggleAccordion(customer.customerId)} className={`flex items-center justify-between px-6 py-4 cursor-pointer transition-colors ${isOpen ? 'bg-primary-orange/5 dark:bg-primary-orange/5' : 'bg-white dark:bg-secondary-dark-bg hover:bg-gray-50 dark:hover:bg-white/5'}`}>
                 <div className="flex items-center gap-4">
                   <div className={`p-2 rounded-lg ${isOpen ? 'bg-primary-orange text-white' : 'bg-gray-100 dark:bg-white/5 text-gray-500 dark:text-gray-400'}`}><User className="w-5 h-5" /></div>
-                  <div><h3 className="font-bold text-gray-900 dark:text-white">{customer.customerId}</h3><p className="text-xs text-gray-500 uppercase tracking-wide">{customer.customerName}</p></div>
+                  <div><h3 className="font-bold text-gray-900 dark:text-white">{customer.customerId}</h3><p className="text-xs text-gray-500 font-semibold tracking-wide">{customer.customerName}</p></div>
                 </div>
                 {isOpen ? <ChevronUp className="w-5 h-5 text-primary-orange" /> : <ChevronDown className="w-5 h-5 text-gray-400" />}
               </div>
               {isOpen && (
                 <div className="p-6 bg-white dark:bg-darkbg border-t border-gray-200 dark:border-white/10 space-y-8">
                   <div className="space-y-4">
-                    <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] flex items-center gap-2 mb-2"><LayoutGrid className="w-3.5 h-3.5" /> Customer Details</h4>
+                    <h4 className="text-xs font-bold text-gray-400 tracking-wider flex items-center gap-2 mb-2"><LayoutGrid className="w-3.5 h-3.5" /> Customer details</h4>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       {['Email', 'Phone', 'Status'].map((f) => (
                         <div key={f} className="px-4 py-3 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5">
-                          <p className="text-[9px] text-gray-500 uppercase font-bold mb-0.5">{f}</p>
+                          <p className="text-xs text-gray-500 font-semibold mb-0.5">{f}</p>
                           <p className="text-sm font-medium text-gray-800 dark:text-gray-200">{customer.details[f.toLowerCase()]}</p>
                         </div>
                       ))}
@@ -96,15 +96,15 @@ const ConsentManagement = ({
                   <div className="space-y-6">
                     <div className="flex border-b border-gray-100 dark:border-white/10">
                       {['APIs', 'Products', 'TPP'].map((tab) => (
-                        <button key={tab} onClick={() => setInternalTab(customer.customerId, tab)} className={`px-6 py-3 text-xs font-bold uppercase tracking-widest border-b-2 transition-all ${activeInternalTab === tab ? 'border-primary-orange text-primary-orange' : 'border-transparent text-gray-400 hover:text-gray-300'}`}>{tab}</button>
+                        <button key={tab} onClick={() => setInternalTab(customer.customerId, tab)} className={`px-6 py-3 text-xs font-bold border-b-2 transition-all ${activeInternalTab === tab ? 'border-primary-orange text-primary-orange' : 'border-transparent text-gray-400 hover:text-gray-300'}`}>{tab}</button>
                       ))}
                     </div>
                     <div className="space-y-8 pl-2">
                       {(activeInternalTab === 'APIs' ? customer.apis : activeInternalTab === 'Products' ? customer.products : customer.tpps).map((item) => (
                         <div key={item.name} className="space-y-4">
                           <div className="flex items-center justify-between gap-4">
-                            <div className="inline-flex items-center px-6 py-2 bg-gray-100 dark:bg-white/5 rounded-lg border border-gray-200 dark:border-white/10 shadow-sm"><span className="text-xs font-bold text-gray-700 dark:text-gray-300 tracking-wide uppercase">{item.name} Name and Details</span></div>
-                            <button onClick={() => setDrawerState({ isOpen: true, item })} className="flex items-center gap-2 px-4 py-2 bg-primary-orange/10 text-primary-orange rounded-lg text-[10px] font-bold uppercase tracking-widest hover:bg-primary-orange/20 transition-all border border-primary-orange/20 shadow-sm"><Cpu className="w-3.5 h-3.5" /> Enable Consent</button>
+                            <div className="inline-flex items-center px-6 py-2 bg-gray-100 dark:bg-white/5 rounded-lg border border-gray-200 dark:border-white/10 shadow-sm"><span className="text-xs text-gray-700 dark:text-gray-300 tracking-wide font-semibold">{item.name} Name and Details</span></div>
+                            <button onClick={() => setDrawerState({ isOpen: true, item })} className="flex items-center gap-2 px-4 py-2 bg-primary-orange/10 text-primary-orange rounded-lg text-xs font-semibold hover:bg-primary-orange/20 transition-all border border-primary-orange/20 shadow-sm"><Cpu className="w-3.5 h-3.5" /> Enable Consent</button>
                           </div>
                         </div>
                       ))}

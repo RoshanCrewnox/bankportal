@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { ThemeContext } from './ThemeContext';
-import { Eye, Pencil } from 'lucide-react';
+import Pagination from './Pagination';
 
 const EMPTY_HEADERS = [];
 const EMPTY_DATA = [];
@@ -11,18 +11,19 @@ const DataTable = ({
   data = EMPTY_DATA, 
   renderRow, 
   actions = EMPTY_ACTIONS,
-  emptyMessage = "No records found"
+  emptyMessage = "No records found",
+  pagination = null // { currentPage, totalItems, onPageChange, itemsPerPage }
 }) => {
   const { theme } = useContext(ThemeContext);
   const isDark = theme === 'dark';
 
   return (
-    <div className={`overflow-x-auto rounded-xl border ${isDark ? 'border-white/10' : 'border-gray-200 bg-white'}`}>
+    <div className={`overflow-x-auto rounded-xl border ${isDark ? 'border-white/10' : 'border-gray-200 bg-white shadow-sm'}`}>
       <table className="w-full text-left">
         <thead>
           <tr className={`border-b ${isDark ? 'border-white/10 bg-darkbg' : 'border-gray-100 bg-gray-50'}`}>
             {headers.map((header) => (
-              <th key={header} className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th key={header} className="px-6 py-4 text-sm font-semibold text-gray-500 dark:text-gray-300 tracking-wider">
                 {header}
               </th>
             ))}
@@ -30,7 +31,7 @@ const DataTable = ({
         </thead>
         <tbody className={`divide-y ${isDark ? 'divide-white/5 bg-secondary-dark-bg/30' : 'divide-gray-100'}`}>
           {data.map((item, index) => (
-            <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-white/2 transition-colors group">
+            <tr key={item.id || index} className="hover:bg-gray-50 dark:hover:bg-white/2 transition-colors group">
               {renderRow ? renderRow(item, index) : Object.entries(item).map(([key, val]) => (
                 <td key={`${item.id}-${key}`} className="px-6 py-4 text-sm text-gray-900 dark:text-gray-300">
                   {val}
@@ -38,8 +39,8 @@ const DataTable = ({
               ))}
               
               {actions.length > 0 && (
-                <td className="px-6 py-4">
-                  <div className="flex items-center gap-2">
+                <td className="px-6 py-4 text-right">
+                  <div className="flex items-center justify-end gap-2">
                     {actions.map((action, actionIdx) => {
                       const Icon = action.icon;
                       return (
@@ -68,6 +69,16 @@ const DataTable = ({
           )}
         </tbody>
       </table>
+      
+      {pagination && (
+        <Pagination 
+          currentPage={pagination.currentPage}
+          totalItems={pagination.totalItems}
+          itemsPerPage={pagination.itemsPerPage}
+          onPageChange={pagination.onPageChange}
+          isDark={isDark}
+        />
+      )}
     </div>
   );
 };

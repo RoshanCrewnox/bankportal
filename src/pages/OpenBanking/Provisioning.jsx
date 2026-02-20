@@ -11,11 +11,14 @@ const Provisioning = () => {
   const {
     activeTab,
     data,
+    totalItems,
+    currentPage,
     loading,
     drawerOpen,
     selectedItem,
     drawerMode,
     handleTabChange,
+    handlePageChange,
     openDrawer,
     closeDrawer,
     saveItem,
@@ -71,6 +74,9 @@ const Provisioning = () => {
                 <ProvisioningTable 
                     data={data} 
                     activeTab={activeTab} 
+                    totalItems={totalItems}
+                    currentPage={currentPage}
+                    onPageChange={handlePageChange}
                     onView={(item) => openDrawer(item, 'view')}
                     onEdit={(item) => openDrawer(item, 'edit')} 
                 />

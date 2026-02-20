@@ -71,7 +71,7 @@ const HitsStatsSummary = ({ theme, data }) => {
                         <div className="text-xl font-bold text-gray-900 dark:text-white leading-none">
                             {hoveredSegment === 'success' ? `${stats.successPercentage}%` : hoveredSegment === 'failure' ? `${stats.failurePercentage}%` : stats.total}
                         </div>
-                        <div className="text-[10px] text-gray-500 uppercase font-medium mt-1">
+                        <div className="text-xs text-gray-500 font-semibold mt-1">
                             {hoveredSegment === 'success' ? 'Success' : hoveredSegment === 'failure' ? 'Failure' : 'Total'}
                         </div>
                     </div>
@@ -79,17 +79,17 @@ const HitsStatsSummary = ({ theme, data }) => {
 
                 <div className="flex-1 ml-6">
                     <div className="mb-4">
-                        <div className="text-xs text-gray-500 mb-1">Total</div>
-                        <div className="text-2xl font-bold text-gray-900 dark:text-white leading-none">{stats.total} Hits</div>
+                        <div className="text-xs text-gray-500 mb-1">Total Hits</div>
+                        <div className="text-3xl font-bold text-gray-900 dark:text-white leading-none">{stats.total}</div>
                         <div className="h-px w-full bg-gray-200 dark:bg-white/10 mt-2" />
                     </div>
                     <div className="flex gap-10">
                         <div>
-                            <div className="text-[10px] text-green-500 font-semibold uppercase mb-1">Success</div>
+                            <div className="text-xs text-green-500 font-semibold mb-1">Success</div>
                             <div className="text-xl font-bold text-gray-900 dark:text-white">{stats.successPercentage}%</div>
                         </div>
                         <div>
-                            <div className="text-[10px] text-red-500 font-semibold uppercase mb-1">Failed</div>
+                            <div className="text-xs text-red-500 font-semibold mb-1">Failed</div>
                             <div className="text-xl font-bold text-gray-900 dark:text-white">{stats.failurePercentage}%</div>
                         </div>
                     </div>
@@ -103,7 +103,7 @@ const HitsStatsSummary = ({ theme, data }) => {
                         <div className="bg-linear-to-r from-red-400 to-red-500" style={{ width: `${stats.failurePercentage}%` }}></div>
                     </div>
                 </div>
-                <div className="flex justify-between text-[10px] text-gray-500 font-medium mt-1">
+                <div className="flex justify-between text-xs text-gray-500 font-semibold mt-1">
                     <span>0%</span>
                     <span>100%</span>
                 </div>
@@ -116,7 +116,7 @@ const HitsStatsSummary = ({ theme, data }) => {
                     </div>
                     <div>
                         <div className="text-lg font-bold text-gray-900 dark:text-white leading-none">{stats.authorizedHits} Hits</div>
-                        <div className="text-[10px] text-gray-500 font-medium mt-1">Authorized</div>
+                        <div className="text-xs text-gray-500 font-semibold mt-1">Authorized</div>
                     </div>
                 </div>
                 <div className="bg-gray-50 dark:bg-white/3 border border-gray-100 dark:border-white/5 rounded-xl p-3 flex items-center gap-3">
@@ -125,7 +125,7 @@ const HitsStatsSummary = ({ theme, data }) => {
                     </div>
                     <div>
                         <div className="text-lg font-bold text-gray-900 dark:text-white leading-none">{stats.unauthorizedHits} Hits</div>
-                        <div className="text-[10px] text-gray-500 font-medium mt-1">Unauthorized</div>
+                        <div className="text-xs text-gray-500 font-semibold mt-1">Unauthorized</div>
                     </div>
                 </div>
             </div>

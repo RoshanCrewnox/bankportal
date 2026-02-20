@@ -15,7 +15,7 @@ const SchemaNode = ({ data, isDark }) => (
   <div className={`bg-white dark:bg-[#1e1e2d] border border-gray-200 dark:border-white/10 rounded-xl shadow-2xl overflow-hidden min-w-[220px] animate-in zoom-in duration-300`}>
     {/* Colored Header */}
     <div 
-      className="px-4 py-2 text-center font-bold text-[11px] text-white uppercase tracking-widest shadow-inner relative" 
+      className="px-4 py-2 text-center font-bold text-xs text-white tracking-wider shadow-inner relative" 
       style={{ backgroundColor: data.color || '#6366f1' }}
     >
       <Handle type="target" position={Position.Top} id="top" className="w-1.5! h-1.5! bg-white/50! border-none top-[-3px]!" />
@@ -38,15 +38,15 @@ const SchemaNode = ({ data, isDark }) => (
           
           <div className="flex items-center gap-2">
             <div className="w-1 h-1 rounded-full bg-indigo-400 shadow-[0_0_5px_rgba(99,102,241,0.5)]" />
-            <span className={`text-[10px] font-bold ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>{field.name}</span>
+            <span className={`text-xs font-semibold ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>{field.name}</span>
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-[9px] font-black text-gray-400 uppercase tracking-tighter">
+            <span className="text-xs font-bold text-gray-400 tracking-tight font-mono">
                {field.type === 'add reference' ? `${field.ref.substring(0,8)}...` : field.type.substring(0,6)}
             </span>
             {field.required && (
-              <span className="text-[8px] font-black text-primary-orange bg-primary-orange/10 px-1 rounded-sm">NN</span>
+              <span className="text-xs font-bold text-primary-orange bg-primary-orange/10 px-1 rounded-sm">REQ</span>
             )}
             {field.type === 'add reference' && (
               <Link size={8} className="text-blue-500" />

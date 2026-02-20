@@ -27,12 +27,12 @@ const SchemaTable = ({ schemas, loading, isDark, borderClass, cardBgClass }) => 
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className={isDark ? 'bg-white/5' : 'bg-gray-50'}>
-              <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-gray-500">Schema Name</th>
-              <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-gray-500">Version</th>
-              <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-gray-500">Format</th>
-              <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-gray-500">Status</th>
-              <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-gray-500">Last Updated</th>
-              <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-gray-500 text-right">Actions</th>
+              <th className="px-6 py-4 text-sm font-semibold tracking-wider text-gray-500">Schema Name</th>
+              <th className="px-6 py-4 text-sm font-semibold tracking-wider text-gray-500">Version</th>
+              <th className="px-6 py-4 text-sm font-semibold tracking-wider text-gray-500">Format</th>
+              <th className="px-6 py-4 text-sm font-semibold tracking-wider text-gray-500">Status</th>
+              <th className="px-6 py-4 text-sm font-semibold tracking-wider text-gray-500">Last Updated</th>
+              <th className="px-6 py-4 text-sm font-semibold tracking-wider text-gray-500 text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-700/10">
@@ -48,12 +48,12 @@ const SchemaTable = ({ schemas, loading, isDark, borderClass, cardBgClass }) => 
                 </td>
                 <td className="px-6 py-4 text-sm">{schema.version}</td>
                 <td className="px-6 py-4">
-                  <span className={`px-2 py-1 text-[10px] font-bold uppercase rounded ${isDark ? 'bg-white/10 text-gray-300' : 'bg-gray-100 text-gray-600'}`}>
+                  <span className={`px-2 py-1 text-xs font-bold rounded ${isDark ? 'bg-white/10 text-gray-300' : 'bg-gray-100 text-gray-600'}`}>
                     {schema.format}
                   </span>
                 </td>
                 <td className="px-6 py-4">
-                  <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase ${
+                  <span className={`px-2 py-1 rounded-full text-xs font-bold ${
                     schema.status === 'Active' 
                       ? 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-500' 
                       : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-500'

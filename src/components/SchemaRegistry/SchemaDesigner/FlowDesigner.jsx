@@ -24,7 +24,7 @@ const FlowDesigner = ({ schema, fields, onBack, isDark }) => {
             <h2 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
               Schema Visualizer
             </h2>
-            <p className="text-xs text-gray-500 uppercase tracking-widest font-bold">
+            <p className="text-xs text-gray-500 tracking-widest font-bold">
               {schema.cdm_name} • v{schema.version}
             </p>
           </div>
@@ -85,7 +85,7 @@ const FlowDesigner = ({ schema, fields, onBack, isDark }) => {
                     <h3 className={`font-black text-center mb-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>
                         {schema.cdm_name}
                     </h3>
-                    <p className="text-[10px] text-center text-primary-orange font-bold uppercase tracking-widest">
+                    <p className="text-xs text-center text-primary-orange font-semibold tracking-widest">
                         Core Schema
                     </p>
                 </div>
@@ -108,7 +108,7 @@ const FlowDesigner = ({ schema, fields, onBack, isDark }) => {
                         style={{ transform: `translate(${x}px, ${y}px)` }}
                     >
                         <div className="flex flex-col items-center gap-1">
-                            <span className="text-[10px] font-bold uppercase text-gray-400">{field.type}</span>
+                            <span className="text-xs font-semibold text-gray-400 tracking-wider font-mono">{field.type}</span>
                             <span className="text-xs font-bold">{field.name}</span>
                         </div>
                     </div>
@@ -120,7 +120,7 @@ const FlowDesigner = ({ schema, fields, onBack, isDark }) => {
         <div className={`absolute bottom-6 left-6 p-4 rounded-xl border backdrop-blur-md ${
             isDark ? 'bg-black/40 border-white/10 text-gray-400' : 'bg-white/80 border-gray-200 text-gray-500'
         }`}>
-            <h4 className="text-[10px] font-bold uppercase mb-2">Schema Stats</h4>
+            <h4 className="text-xs font-bold mb-2">Schema Stats</h4>
             <div className="flex gap-4 text-xs">
                 <span>Properties: {propKeys.length}</span>
                 <span>Type: Object</span>

@@ -3,17 +3,17 @@ import { ThemeContext } from '../common/ThemeContext';
 import { Eye, Pencil } from 'lucide-react';
 import DataTable from '../common/DataTable';
 
-const ProvisioningTable = ({ data, activeTab, onEdit, onView }) => {
+const ProvisioningTable = ({ data, activeTab, onEdit, onView, totalItems, currentPage, onPageChange }) => {
     const { theme } = useContext(ThemeContext);
 
     const getHeaders = () => {
         switch (activeTab) {
             case 'TPP':
-                return ['TPP Name', 'Type', 'Region', 'Status', 'Open Banking', 'Actions'];
+                return ['Tpp Name', 'Type', 'Region', 'Status', 'Open Banking', 'Actions'];
             case 'Products':
-                return ['Product Name', 'Type', 'Sandbox', 'Exposure', 'Status', 'Actions'];
+                return ['Product Name', 'Type', 'Exposure', 'Status', 'Actions'];
             case 'APIs':
-                return ['API Name', 'Type', 'Sandbox', 'Exposure', 'Status', 'Actions'];
+                return ['API Name', 'Type', 'Exposure', 'Status', 'Actions'];
             case 'Customer':
                 return ['Customer Name', 'Type', 'Region', 'Exposure', 'Status', 'Actions'];
             default:
@@ -21,7 +21,7 @@ const ProvisioningTable = ({ data, activeTab, onEdit, onView }) => {
         }
     };
 
-    const renderRow = (item) => {
+    const renderRow = (item, index) => {
         return (
             <>
                 {activeTab === 'TPP' && (
@@ -39,7 +39,6 @@ const ProvisioningTable = ({ data, activeTab, onEdit, onView }) => {
                     <>
                         <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{item.name}</td>
                         <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{item.type}</td>
-                        <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{item.sandbox}</td>
                         <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{item.exposure}</td>
                          <td className="px-6 py-4">
                              <StatusBadge status={item.status} />
@@ -50,7 +49,6 @@ const ProvisioningTable = ({ data, activeTab, onEdit, onView }) => {
                     <>
                         <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{item.name}</td>
                         <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{item.type}</td>
-                        <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{item.sandbox}</td>
                         <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{item.exposure}</td>
                          <td className="px-6 py-4">
                              <StatusBadge status={item.status} />
@@ -94,6 +92,12 @@ const ProvisioningTable = ({ data, activeTab, onEdit, onView }) => {
             renderRow={renderRow}
             actions={actions}
             emptyMessage={`No records found for ${activeTab}`}
+            pagination={{
+                currentPage: currentPage,
+                totalItems: totalItems,
+                onPageChange: onPageChange,
+                itemsPerPage: 10
+            }}
         />
     );
 };

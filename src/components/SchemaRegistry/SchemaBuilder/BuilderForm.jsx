@@ -25,7 +25,7 @@ const BuilderForm = ({
     isDark ? '[&>option]:bg-[#2f3349] [&>option]:text-white' : ''
   }`;
 
-  const labelClass = `block text-[10px] uppercase tracking-wider font-bold mb-1.5 ${isDark ? 'text-gray-500' : 'text-gray-400'}`;
+  const labelClass = `block text-xs tracking-wider font-semibold mb-1.5 ${isDark ? 'text-gray-500' : 'text-gray-400'}`;
 
   const sectionClass = `p-8 rounded-3xl border transition-all duration-300 ${
     isDark 
@@ -43,7 +43,7 @@ const BuilderForm = ({
           </div>
           <div>
             <h3 className="text-lg font-bold">Schema Information</h3>
-            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">General Metadata</p>
+            <p className="text-xs text-gray-500 font-semibold tracking-widest">General Metadata</p>
           </div>
         </div>
 
@@ -84,7 +84,7 @@ const BuilderForm = ({
             </div>
             <div>
               <h3 className="text-lg font-bold">Fields Definition</h3>
-              <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">CDM Properties</p>
+              <p className="text-xs text-gray-500 font-semibold tracking-widest">CDM Properties</p>
             </div>
           </div>
           <button 

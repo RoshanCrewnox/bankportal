@@ -56,7 +56,7 @@ const ConsentLedger = ({
                   </div>
                   <div>
                     <h3 className="font-bold text-gray-900 dark:text-white">{customer.customerId}</h3>
-                    <p className="text-xs text-gray-500 uppercase tracking-wide">{customer.customerName}</p>
+                    <p className="text-xs text-gray-500 font-semibold tracking-wide">{customer.customerName}</p>
                   </div>
                 </div>
                 {isOpen ? <ChevronUp className="w-5 h-5 text-primary-orange" /> : <ChevronDown className="w-5 h-5 text-gray-400" />}
@@ -64,13 +64,13 @@ const ConsentLedger = ({
               {isOpen && (
                 <div className="p-6 bg-white dark:bg-darkbg border-t border-gray-200 dark:border-white/10 space-y-8">
                   <div className="space-y-4">
-                    <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] flex items-center gap-2 mb-2">
-                      <LayoutGrid className="w-3.5 h-3.5" /> Customer Details
+                    <h4 className="text-xs font-bold text-gray-400 flex items-center gap-2 mb-2">
+                      <LayoutGrid className="w-3.5 h-3.5" /> Customer details
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       {['Email', 'Phone', 'Status'].map((f) => (
                         <div key={f} className="px-4 py-3 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5">
-                          <p className="text-[9px] text-gray-500 uppercase font-bold mb-0.5">{f}</p>
+                          <p className="text-xs text-gray-500 font-semibold mb-0.5">{f}</p>
                           <p className="text-sm font-medium text-gray-800 dark:text-gray-200">{customer.details[f.toLowerCase()]}</p>
                         </div>
                       ))}
@@ -79,14 +79,14 @@ const ConsentLedger = ({
                   <div className="space-y-6">
                     <div className="flex border-b border-gray-100 dark:border-white/10">
                       {['APIs', 'Products'].map((tab) => (
-                        <button key={tab} onClick={() => setInternalTab(customer.customerId, tab)} className={`px-6 py-3 text-xs font-bold uppercase tracking-widest border-b-2 transition-all ${activeInternalTab === tab ? 'border-primary-orange text-primary-orange' : 'border-transparent text-gray-400 hover:text-gray-300'}`}>{tab}</button>
+                        <button key={tab} onClick={() => setInternalTab(customer.customerId, tab)} className={`px-6 py-3 text-xs font-bold border-b-2 transition-all ${activeInternalTab === tab ? 'border-primary-orange text-primary-orange' : 'border-transparent text-gray-400 hover:text-gray-300'}`}>{tab}</button>
                       ))}
                     </div>
                     <div className="space-y-8 pl-2">
                       {(activeInternalTab === 'APIs' ? customer.apis : customer.products).map((item) => (
                         <div key={item.name} className="space-y-4">
                           <div className="inline-flex items-center px-6 py-2 bg-gray-100 dark:bg-white/5 rounded-lg border border-gray-200 dark:border-white/10 shadow-sm">
-                            <span className="text-xs font-bold text-gray-700 dark:text-gray-300 tracking-wide uppercase">{item.name}</span>
+                            <span className="text-xs font-bold text-gray-700 dark:text-gray-300 tracking-wide">{item.name}</span>
                           </div>
                           <div className="space-y-2.5 pl-6">
                             {item.consents.map((consent, cIdx) => (
@@ -95,11 +95,11 @@ const ConsentLedger = ({
                                 <div className="min-w-[100px] flex items-center"><StatusBadge status={consent.status} /></div>
                                 <div className="flex-1 flex items-center justify-between gap-4">
                                   <div className="flex items-center gap-2">
-                                    <span className="text-[10px] text-gray-400 uppercase font-black opacity-50">Who:</span>
+                                    <span className="text-xs font-semibold text-gray-400 opacity-70">Who:</span>
                                     <span className="text-xs font-semibold text-gray-700 dark:text-gray-200">{consent.granter}</span>
                                   </div>
                                   <div className="flex items-center gap-2">
-                                    <span className="text-[10px] text-gray-400 uppercase font-black opacity-50">When:</span>
+                                    <span className="text-xs font-semibold text-gray-400 opacity-70">When:</span>
                                     <span className="text-xs font-mono text-gray-500 dark:text-gray-400">{consent.date}</span>
                                   </div>
                                 </div>

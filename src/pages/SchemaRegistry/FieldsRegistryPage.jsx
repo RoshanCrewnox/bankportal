@@ -5,6 +5,7 @@ import Button from '../../components/common/Button';
 import DataTable from '../../components/common/DataTable';
 import AddFieldsForm from '../../components/SchemaRegistry/FieldsRegistry/AddFieldsForm';
 import FieldDetailsDrawer from '../../components/SchemaRegistry/FieldsRegistry/FieldDetailsDrawer';
+import GroupingForm from '../../components/SchemaRegistry/FieldsRegistry/GroupingForm';
 
 const initialDrawerState = { isOpen: false, selectedField: null, mode: 'view' };
 
@@ -60,6 +61,25 @@ const FieldsRegistryPage = () => {
       localStorage.setItem('CDM_FIELD_REGISTRY', JSON.stringify(newFields));
       setFields(newFields);
     }
+  };
+
+  const handleApplyGroupConfig = ({ selectedFieldUuids, groupName, config }) => {
+    const updatedFields = fields.map(field => {
+      if (selectedFieldUuids.includes(field.field_uuid)) {
+        return {
+          ...field,
+          ...config,
+          group_name: groupName,
+          status: 'Provisioned',
+          updated_at: new Date().toISOString()
+        };
+      }
+      return field;
+    });
+
+    localStorage.setItem('CDM_FIELD_REGISTRY', JSON.stringify(updatedFields));
+    setFields(updatedFields);
+    setView('LIST');
   };
 
   const filteredFields = useMemo(() => {
@@ -131,6 +151,18 @@ const FieldsRegistryPage = () => {
     );
   }
 
+  if (view === 'GROUPING') {
+    return (
+      <div className="w-full">
+        <GroupingForm 
+          fields={fields} 
+          onApply={handleApplyGroupConfig} 
+          onCancel={() => setView('LIST')} 
+        />
+      </div>
+    );
+  }
+
   return (
     <div className={`space-y-6 animate-in fade-in duration-500 pb-10 ${isDark ? 'text-white' : 'text-gray-800'}`}>
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -149,7 +181,7 @@ const FieldsRegistryPage = () => {
               className="bg-transparent border-none outline-none text-sm w-full"
             />
           </div>
-          <Button variant="secondary" icon={<Layers size={18} />} onClick={() => console.log('Grouping clicked')}>
+          <Button variant="secondary" icon={<Layers size={18} />} onClick={() => setView('GROUPING')}>
             Grouping
           </Button>
           <Button variant="primary" icon={<Plus size={18} />} onClick={() => setView('ADD_FIELDS')}>

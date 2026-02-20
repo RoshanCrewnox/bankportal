@@ -60,7 +60,11 @@ const MultiSelectDropdown = ({ options, selected, onToggle, isDark, placeholder 
               {filteredOptions.map(opt => (
                 <div
                   key={opt}
-                  onClick={() => onToggle(opt)}
+                  onClick={() => {
+                    onToggle(opt);
+                    setIsOpen(false);
+                    setSearch('');
+                  }}
                   className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-between ${
                     selected.includes(opt)
                       ? 'bg-primary-orange/20 text-primary-orange'

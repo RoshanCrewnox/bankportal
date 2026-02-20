@@ -40,7 +40,7 @@ const PermissionsStep = ({ formData, toggleScope }) => {
                   onChange={() => toggleScope(scope)}
                 />
               </div>
-              <span className={`text-sm font-black uppercase tracking-widest ${formData.scopes.includes(scope) ? 'text-primary-orange' : 'text-gray-600 dark:text-gray-400'}`}>
+              <span className={`text-sm font-black tracking-widest ${formData.scopes.includes(scope) ? 'text-primary-orange' : 'text-gray-600 dark:text-gray-400'}`}>
                 {scope}
               </span>
             </label>

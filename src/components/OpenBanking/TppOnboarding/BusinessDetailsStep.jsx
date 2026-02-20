@@ -16,7 +16,7 @@ const BusinessDetailsStep = ({ formData, updateFormData }) => {
           <label className={labelClass}>TPP Name *</label>
           <input 
             className={inputClass} 
-            placeholder="Enter legal entity name"
+            placeholder="Legal company name"
             value={formData.name}
             onChange={(e) => updateFormData('business', 'name', e.target.value)}
           />

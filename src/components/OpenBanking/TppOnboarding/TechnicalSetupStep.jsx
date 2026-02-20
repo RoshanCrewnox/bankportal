@@ -20,7 +20,7 @@ const TechnicalSetupStep = ({ formData, updateFormData, addRedirectUri, removeRe
           </div>
           <button 
             onClick={addRedirectUri}
-            className="bg-primary-orange/10 text-primary-orange hover:bg-primary-orange/20 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-colors flex items-center gap-2"
+            className="bg-primary-orange/10 text-primary-orange hover:bg-primary-orange/20 px-4 py-2 rounded-xl text-xs font-black tracking-widest transition-colors flex items-center gap-2"
           >
             <Plus size={14} />
             Add URI
