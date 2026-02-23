@@ -33,7 +33,7 @@ const ConsentCenter = () => {
     const [showLedger, setShowLedger] = useState(false);
 
     return (
-        <div className="space-y-6 animate-in slide-in-from-bottom duration-500 pb-20">
+        <div className="space-y-6 animate-in slide-in-from-bottom duration-500 pb-20 w-full min-w-0 max-w-full">
             {/* Header */}
             <div className="flex items-start justify-between">
                 <div>

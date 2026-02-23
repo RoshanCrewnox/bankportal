@@ -71,6 +71,7 @@ export const useConsentCenter = () => {
         let active = 0;
         let pending = 0;
         let revoked = 0;
+        let rejected = 0;
 
         data.forEach(customer => {
             const allItems = [...customer.apis, ...customer.products, ...(customer.tpps || [])];
@@ -81,11 +82,12 @@ export const useConsentCenter = () => {
                     if (status === 'active') active++;
                     else if (status === 'pending') pending++;
                     else if (status === 'revoked' || status === 'expired') revoked++;
+                    else if (status === 'rejected') rejected++;
                 });
             });
         });
 
-        return { total, active, pending, revoked };
+        return { total, active, pending, revoked, rejected };
     }, [data]);
 
     const filteredLedger = data.filter(item => 

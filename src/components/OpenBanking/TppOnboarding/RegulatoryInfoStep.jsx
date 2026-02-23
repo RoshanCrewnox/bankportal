@@ -1,6 +1,6 @@
 import React from 'react';
 
-const inputClass = "w-full px-4 py-2.5 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-sm focus:ring-2 focus:ring-primary-orange/20 focus:border-primary-orange outline-none transition-all dark:text-white";
+const inputClass = "w-full px-4 py-2.5 bg-gray-50 dark:bg-darkbg border border-gray-200 dark:border-white/10 rounded-xl text-sm focus:ring-2 focus:ring-primary-orange/20 focus:border-primary-orange outline-none transition-all text-gray-900 dark:text-white dark:placeholder:text-gray-500";
 const labelClass = "block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5";
 
 const RegulatoryInfoStep = ({ formData, updateFormData }) => {

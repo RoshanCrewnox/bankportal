@@ -1,6 +1,16 @@
 import React from 'react';
 import { Plus, Database, Info } from 'lucide-react';
 import FieldRow from './FieldRow';
+import MultiSelectDropdown from '../FieldsRegistry/MultiSelectDropdown';
+
+const DOMAIN_OPTIONS = [
+  "BFSI", "Telcom", "Utilities", "Retail", "Oil&Gas", "Healthcare", "Lifescience"
+];
+
+const SUBDOMAIN_OPTIONS = [
+  "Investments", "Insurance", "Pensions", "Loans", "Credit cards", 
+  "Wealth management", "BNPL", "Utility bills", "Telco payments", "Crypto"
+];
 
 const BuilderForm = ({ 
   schema, 
@@ -27,9 +37,17 @@ const BuilderForm = ({
 
   const labelClass = `block text-xs tracking-wider font-semibold mb-1.5 ${isDark ? 'text-gray-500' : 'text-gray-400'}`;
 
-  const sectionClass = `p-8 rounded-3xl border transition-all duration-300 ${
+  const handleToggle = (name, val) => {
+    const current = Array.isArray(schema[name]) ? schema[name] : [];
+    const updated = current.includes(val) 
+      ? current.filter(v => v !== val) 
+      : [...current, val];
+    onUpdate({ ...schema, [name]: updated });
+  };
+
+  const sectionClass = `relative p-8 rounded-3xl border transition-all duration-300 ${
     isDark 
-      ? 'bg-[#2f3349]/30 border-white/5 shadow-[0_8px_32px_rgba(0,0,0,0.2)] backdrop-blur-sm' 
+      ? 'bg-[#2f3349]/50 border-white/5 shadow-[0_8px_32px_rgba(0,0,0,0.2)]' 
       : 'bg-white border-gray-100 shadow-[0_10px_40px_rgba(0,0,0,0.04)]'
   }`;
 
@@ -57,15 +75,33 @@ const BuilderForm = ({
              <input id="schema-desc" name="desc" value={schema.desc} onChange={handleChange} className={inputClass} placeholder="Briefly describe the purpose of this schema..." />
           </div>
           
-          <div className="md:col-span-4">
+          <div className="md:col-span-3">
             <label htmlFor="schema-version" className={labelClass}>Version</label>
             <input id="schema-version" name="version" value={schema.version} onChange={handleChange} className={inputClass} placeholder="1.0.0" />
           </div>
-          <div className="md:col-span-4">
-            <label htmlFor="schema-domain" className={labelClass}>Domain</label>
-            <input id="schema-domain" name="cdm_domain" value={schema.cdm_domain} onChange={handleChange} className={inputClass} placeholder="Retail Banking" />
+          <div className="md:col-span-3">
+            <label className={labelClass}>Domain</label>
+            <MultiSelectDropdown 
+              options={DOMAIN_OPTIONS} 
+              selected={schema.cdm_domain || []} 
+              onToggle={(val) => handleToggle('cdm_domain', val)} 
+              isDark={isDark} 
+              placeholder="Select Domain" 
+              itemType="Domain"
+            />
           </div>
-          <div className="md:col-span-4">
+          <div className="md:col-span-3">
+            <label className={labelClass}>Sub Domain</label>
+            <MultiSelectDropdown 
+              options={SUBDOMAIN_OPTIONS} 
+              selected={schema.sub_domain || []} 
+              onToggle={(val) => handleToggle('sub_domain', val)} 
+              isDark={isDark} 
+              placeholder="Select Sub Domain" 
+              itemType="Sub Domain"
+            />
+          </div>
+          <div className="md:col-span-3">
             <label htmlFor="schema-status" className={labelClass}>Status</label>
             <select id="schema-status" name="status" value={schema.status} onChange={handleChange} className={selectClass}>
               <option value="Draft">Draft</option>

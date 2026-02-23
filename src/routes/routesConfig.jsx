@@ -10,6 +10,7 @@ import ConsentCenter from '../pages/OpenBanking/ConsentCenter';
 import SchemaRegistryPage from '../pages/SchemaRegistry/SchemaRegistryPage';
 import FieldsRegistryPage from '../pages/SchemaRegistry/FieldsRegistryPage';
 import SchemaFlowPage from '../pages/SchemaRegistry/SchemaFlowPage';
+import AssetLaunchPad from '../pages/AssetLaunchPad/AssetLaunchPad';
 
 /**
  * Public routes that do not require authentication
@@ -59,6 +60,32 @@ export const privateRoutes = [
     ]
   },
   {
+    name: 'Open Finance',
+    path: 'open-finance',
+    children: [
+      {
+        name: 'Dashboard',
+        path: 'dashboard',
+        element: <OpenBankingDashboard />
+      },
+      {
+        name: 'Provisioning',
+        path: 'provisioning',
+        element: <Provisioning />
+      },
+      {
+        name: 'TPP Onboarding',
+        path: 'tpp-onboarding',
+        element: <TppOnboardingPage />
+      },
+      {
+        name: 'Consent Center',
+        path: 'consent-center',
+        element: <ConsentCenter />
+      }
+    ]
+  },
+  {
     name: 'Schema Registry',
     path: 'schema-registry',
     children: [
@@ -82,6 +109,11 @@ export const privateRoutes = [
         element: <SchemaFlowPage />
       }
     ]
+  },
+  {
+    name: 'Asset Launch Pad',
+    path: 'asset-launchpad',
+    element: <AssetLaunchPad />
   },
   {
     name: 'Root',

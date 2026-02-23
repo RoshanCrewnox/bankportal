@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, Check, ArrowRight, ArrowLeft } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Check, ArrowRight, ArrowLeft, Building2, ShieldCheck, Settings2, Lock } from 'lucide-react';
 import { useTppOnboarding } from '../../hooks/OpenBanking/useTppOnboarding';
 import BusinessDetailsStep from '../../components/OpenBanking/TppOnboarding/BusinessDetailsStep';
 import RegulatoryInfoStep from '../../components/OpenBanking/TppOnboarding/RegulatoryInfoStep';
@@ -18,15 +18,23 @@ const TppOnboardingPage = () => {
     addRedirectUri, 
     removeRedirectUri, 
     toggleScope,
+    isStepValid,
     steps 
   } = useTppOnboarding();
+
+  const iconMap = {
+    Building2,
+    ShieldCheck,
+    Settings2,
+    Lock
+  };
 
   const renderStep = () => {
     switch (currentStep) {
       case 1: return <BusinessDetailsStep formData={formData.business} updateFormData={updateFormData} />;
       case 2: return <RegulatoryInfoStep formData={formData.regulatory} updateFormData={updateFormData} />;
       case 3: return <TechnicalSetupStep formData={formData.technical} updateFormData={updateFormData} addRedirectUri={addRedirectUri} removeRedirectUri={removeRedirectUri} />;
-      case 4: return <PermissionsStep formData={formData.permissions} toggleScope={toggleScope} />;
+      case 4: return <PermissionsStep formData={formData.permissions} scope={formData.business.scope} toggleScope={toggleScope} />;
       default: return null;
     }
   };
@@ -68,7 +76,14 @@ const TppOnboardingPage = () => {
                         currentStep > step.id ? 'bg-primary-orange/10 text-primary-orange border-2 border-primary-orange/20' : 
                         'bg-white dark:bg-white/5 text-gray-400 border border-gray-100 dark:border-white/10'}
                     `}>
-                      {currentStep > step.id ? <Check size={18} className="stroke-[3px]" /> : <span className="text-xs font-bold">{step.id}</span>}
+                      {currentStep > step.id ? (
+                        <Check size={18} className="stroke-[3px]" />
+                      ) : (
+                        (() => {
+                          const IconComp = iconMap[step.icon];
+                          return IconComp ? <IconComp size={18} /> : <span className="text-xs font-bold">{step.id}</span>;
+                        })()
+                      )}
                       {step.id < 4 && (
                         <div className={`absolute top-full left-1/2 -translate-x-1/2 w-0.5 h-6 ${currentStep > step.id ? 'bg-primary-orange/30' : 'bg-gray-100 dark:bg-white/5'}`} />
                       )}
@@ -116,7 +131,12 @@ const TppOnboardingPage = () => {
               
               <button
                 onClick={handleNext}
-                className="flex items-center gap-2.5 px-8 py-3 bg-primary-orange hover:bg-primary-orange/90 text-white rounded-xl font-black text-[10px] tracking-widest shadow-[0_8px_20_rgba(237,127,24,0.25)] hover:shadow-[0_12px_30px_rgba(237,127,24,0.35)] transition-all active:scale-95"
+                disabled={!isStepValid}
+                className={`flex items-center gap-2.5 px-8 py-3 rounded-xl font-black text-[10px] tracking-widest transition-all active:scale-95 ${
+                  isStepValid 
+                    ? 'bg-primary-orange hover:bg-primary-orange/90 text-white shadow-[0_8px_20px_rgba(237,127,24,0.25)] hover:shadow-[0_12px_30px_rgba(237,127,24,0.35)]' 
+                    : 'bg-gray-200 dark:bg-white/5 text-gray-400 dark:text-gray-600 cursor-not-allowed opacity-50'
+                }`}
               >
                 {currentStep === 4 ? 'Complete Onboarding' : 'Next Step'}
                 {currentStep < 4 && <ArrowRight size={16} />}

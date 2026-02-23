@@ -16,7 +16,8 @@ const INITIAL_SCHEMA = {
   org_id: '',
   cdm_defination: JSON.stringify(fieldsToDefinition(INITIAL_FIELDS)),
   cdm_validation: '',
-  cdm_domain: '',
+  cdm_domain: [],
+  sub_domain: [],
   status: 'Draft',
   desc: ''
 };
@@ -241,11 +242,23 @@ export const useSchemaRegistry = () => {
   };
 
   const filteredSchemas = useMemo(() => {
-    return schemas.filter(s => 
-      s.cdm_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      s.cdm_domain?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      s.cdm_id?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    return schemas.filter(s => {
+      const term = searchTerm.toLowerCase();
+      const nameMatch = s.cdm_name?.toLowerCase().includes(term);
+      const idMatch = s.cdm_id?.toLowerCase().includes(term);
+      
+      // Handle array or string for domain
+      const domainMatch = Array.isArray(s.cdm_domain)
+        ? s.cdm_domain.some(d => d.toLowerCase().includes(term))
+        : s.cdm_domain?.toLowerCase().includes(term);
+
+      // Handle sub_domain array
+      const subDomainMatch = Array.isArray(s.sub_domain)
+        ? s.sub_domain.some(sd => sd.toLowerCase().includes(term))
+        : false;
+
+      return nameMatch || idMatch || domainMatch || subDomainMatch;
+    });
   }, [schemas, searchTerm]);
 
   return {

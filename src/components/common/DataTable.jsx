@@ -1,5 +1,6 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState, useMemo } from 'react';
 import { ThemeContext } from './ThemeContext';
+import { ArrowUp, ArrowDown } from 'lucide-react';
 import Pagination from './Pagination';
 
 const EMPTY_HEADERS = [];
@@ -12,25 +13,74 @@ const DataTable = ({
   renderRow, 
   actions = EMPTY_ACTIONS,
   emptyMessage = "No records found",
-  pagination = null // { currentPage, totalItems, onPageChange, itemsPerPage }
+  pagination = null, // { currentPage, totalItems, onPageChange, itemsPerPage }
+  className = "",
+  tableClassName = ""
 }) => {
   const { theme } = useContext(ThemeContext);
   const isDark = theme === 'dark';
 
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
+
+  const requestSort = (key) => {
+    if (!key) return;
+    let direction = 'asc';
+    if (sortConfig.key === key && sortConfig.direction === 'asc') direction = 'desc';
+    setSortConfig({ key, direction });
+  };
+
+  const sortedData = useMemo(() => {
+    let sortableItems = [...data];
+    if (sortConfig.key !== null) {
+      sortableItems.sort((a, b) => {
+        let aVal = a[sortConfig.key];
+        let bVal = b[sortConfig.key];
+        if (aVal === undefined || aVal === null) aVal = '';
+        if (bVal === undefined || bVal === null) bVal = '';
+        if (typeof aVal === 'string') aVal = aVal.toLowerCase();
+        if (typeof bVal === 'string') bVal = bVal.toLowerCase();
+        
+        if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
+        if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
+        return 0;
+      });
+    }
+    return sortableItems;
+  }, [data, sortConfig]);
+
   return (
-    <div className={`overflow-x-auto rounded-xl border ${isDark ? 'border-white/10' : 'border-gray-200 bg-white shadow-sm'}`}>
-      <table className="w-full text-left">
+    <div className={`overflow-x-auto rounded-xl border ${isDark ? 'border-white/10' : 'border-gray-200 bg-white shadow-sm'} ${className}`}>
+      <table className={`w-full text-left ${tableClassName}`}>
         <thead>
           <tr className={`border-b ${isDark ? 'border-white/10 bg-darkbg' : 'border-gray-100 bg-gray-50'}`}>
-            {headers.map((header) => (
-              <th key={header} className="px-6 py-4 text-sm font-semibold text-gray-500 dark:text-gray-300 tracking-wider">
-                {header}
-              </th>
-            ))}
+            {headers.map((header, idx) => {
+              const label = typeof header === 'object' ? header.label : header;
+              const sortKey = typeof header === 'object' ? header.key : null;
+              const isActions = label.toLowerCase() === 'actions';
+              const isSortable = !isActions && sortKey;
+              
+              return (
+                <th 
+                  key={idx} 
+                  className={`px-6 py-4 text-sm font-bold tracking-wider text-gray-900 dark:text-gray-100 ${isSortable ? 'cursor-pointer select-none hover:text-black dark:hover:text-white group transition-colors' : ''}`}
+                  onClick={() => isSortable && requestSort(sortKey)}
+                >
+                  <div className="flex items-center">
+                    {label}
+                    {isSortable && (
+                      <span className={`ml-1 flex flex-col items-center justify-center transition-opacity ${sortConfig.key === sortKey ? 'opacity-100' : 'opacity-0 group-hover:opacity-50'}`}>
+                        <ArrowUp className={`w-3 h-3 ${sortConfig.key === sortKey && sortConfig.direction === 'asc' ? 'text-primary-orange' : 'text-gray-400'}`} />
+                        <ArrowDown className={`w-3 h-3 -mt-1 ${sortConfig.key === sortKey && sortConfig.direction === 'desc' ? 'text-primary-orange' : 'text-gray-400'}`} />
+                      </span>
+                    )}
+                  </div>
+                </th>
+              );
+            })}
           </tr>
         </thead>
         <tbody className={`divide-y ${isDark ? 'divide-white/5 bg-secondary-dark-bg/30' : 'divide-gray-100'}`}>
-          {data.map((item, index) => (
+          {sortedData.map((item, index) => (
             <tr key={item.id || index} className="hover:bg-gray-50 dark:hover:bg-white/2 transition-colors group">
               {renderRow ? renderRow(item, index) : Object.entries(item).map(([key, val]) => (
                 <td key={`${item.id}-${key}`} className="px-6 py-4 text-sm text-gray-900 dark:text-gray-300">
@@ -39,8 +89,8 @@ const DataTable = ({
               ))}
               
               {actions.length > 0 && (
-                <td className="px-6 py-4 text-right">
-                  <div className="flex items-center justify-end gap-2">
+                <td className="px-6 py-4 text-left">
+                  <div className="flex items-center justify-start gap-2">
                     {actions.map((action, actionIdx) => {
                       const Icon = action.icon;
                       return (
@@ -60,7 +110,7 @@ const DataTable = ({
             </tr>
           ))}
           
-          {data.length === 0 && (
+          {sortedData.length === 0 && (
             <tr>
               <td colSpan={headers.length} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400 italic text-sm">
                 {emptyMessage}

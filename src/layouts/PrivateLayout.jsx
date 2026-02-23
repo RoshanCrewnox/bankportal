@@ -37,7 +37,7 @@ const PrivateLayout = () => {
       <div className="layout-container flex h-full">
         {/* Sidebar */}
         <div
-          className={`fixed z-[9999] inset-y-0 left-0 transform transition-transform duration-300 ease-in-out
+          className={`fixed z-9999 inset-y-0 left-0 transform transition-transform duration-300 ease-in-out
             ${sidebarOpen ? "translate-x-0 dark:bg-[#2f3349] bg-[#F8F7FA]" : "-translate-x-full"}
             lg:translate-x-0 lg:static lg:z-auto`}
         >
@@ -56,10 +56,10 @@ const PrivateLayout = () => {
         )}
 
         {/* Main Content */}
-        <div className="layout-page flex flex-col flex-1 h-full">
+        <div className="layout-page flex flex-col flex-1 h-full min-w-0">
           <Header onSidebarToggle={() => setSidebarOpen(!sidebarOpen)} />
 
-          <div className="layout-content grow overflow-y-auto mt-2 px-4 py-2">
+          <div className="layout-content grow overflow-y-auto mt-2 px-4 py-2 min-w-0">
             <main className="grow main-content p-3"><Outlet /></main>
           </div>
         </div>

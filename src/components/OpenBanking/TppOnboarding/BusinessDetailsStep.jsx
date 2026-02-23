@@ -1,6 +1,6 @@
 import React from 'react';
 
-const inputClass = "w-full px-4 py-2.5 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-sm focus:ring-2 focus:ring-primary-orange/20 focus:border-primary-orange outline-none transition-all dark:text-white";
+const inputClass = "w-full px-4 py-2.5 bg-gray-50 dark:bg-darkbg border border-gray-200 dark:border-white/10 rounded-xl text-sm focus:ring-2 focus:ring-primary-orange/20 focus:border-primary-orange outline-none transition-all text-gray-900 dark:text-white dark:placeholder:text-gray-500";
 const labelClass = "block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5";
 
 const BusinessDetailsStep = ({ formData, updateFormData }) => {
@@ -30,16 +30,49 @@ const BusinessDetailsStep = ({ formData, updateFormData }) => {
             onChange={(e) => updateFormData('business', 'id', e.target.value)}
           />
         </div>
-        <div className="md:col-span-2">
+        <div className="md:col-span-1">
+          <label className={labelClass}>Scope *</label>
+          <select 
+            className={inputClass}
+            value={formData.scope}
+            onChange={(e) => {
+              const newScope = e.target.value;
+              updateFormData('business', 'scope', newScope);
+              // Reset type to empty when scope changes
+              updateFormData('business', 'type', '');
+            }}
+          >
+            <option value="">Select Scope</option>
+            <option value="Open Banking">Open Banking</option>
+            <option value="Open Finance">Open Finance</option>
+          </select>
+        </div>
+        <div className="md:col-span-1">
           <label className={labelClass}>TPP Type *</label>
           <select 
             className={inputClass}
             value={formData.type}
             onChange={(e) => updateFormData('business', 'type', e.target.value)}
+            disabled={!formData.scope}
           >
-            <option>Account Information (AISP)</option>
-            <option>Payment Initiation (PISP)</option>
-            <option>Both (AISP & PISP)</option>
+            <option value="">Select TPP Type</option>
+            {formData.scope === 'Open Banking' ? (
+              <>
+                <option>Account Information (AISP)</option>
+                <option>Payment Initiation (PISP)</option>
+                <option>Both (AISP & PISP)</option>
+              </>
+            ) : formData.scope === 'Open Finance' ? (
+              <>
+                <option>Financial Information User (FIU)</option>
+                <option>Financial Information Provider (FIP)</option>
+                <option>Consent Central Manager (CCM)</option>
+                <option>Account Aggregator (AA)</option>
+                <option>FIS (Loan)</option>
+                <option>FIS (Investment)</option>
+                <option>FIS (Insurance)</option>
+              </>
+            ) : null}
           </select>
         </div>
         <div className="md:col-span-2">

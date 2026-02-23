@@ -15,7 +15,8 @@ export const useTppOnboarding = () => {
     business: {
       name: '',
       id: '',
-      type: 'Account Information (AISP)',
+      scope: '',
+      type: '',
       regNumber: '',
       address: '',
       country: '',
@@ -78,6 +79,25 @@ export const useTppOnboarding = () => {
     updateFormData('permissions', 'scopes', newScopes);
   };
 
+  const isStepValid = () => {
+    switch (currentStep) {
+      case 1: // Business Details
+        const b = formData.business;
+        // Require name, id, scope, type, regNumber, address, country, email, phone
+        return !!(b.name && b.id && b.scope && b.type && b.regNumber && b.address && b.country && b.email && b.phone);
+      case 2: // Regulatory Info
+        const r = formData.regulatory;
+        return !!(r.authority && r.authNumber && r.authDate);
+      case 3: // Technical Setup
+        // At least one non-empty redirect URI
+        return formData.technical.redirectUris.some(uri => uri.trim().length > 0);
+      case 4: // Permissions
+        return formData.permissions.scopes.length > 0;
+      default:
+        return false;
+    }
+  };
+
   return {
     currentStep,
     formData,
@@ -87,6 +107,7 @@ export const useTppOnboarding = () => {
     addRedirectUri,
     removeRedirectUri,
     toggleScope,
+    isStepValid: isStepValid(),
     steps: STEPS
   };
 };

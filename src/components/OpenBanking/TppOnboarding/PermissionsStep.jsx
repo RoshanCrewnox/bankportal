@@ -3,8 +3,11 @@ import { Check } from 'lucide-react';
 
 const labelClass = "block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5";
 
-const PermissionsStep = ({ formData, toggleScope }) => {
-  const availableScopes = ['Accounts', 'Payments', 'Transactions', 'Customer Info', 'Balances', 'Cards'];
+const PermissionsStep = ({ formData, scope, toggleScope }) => {
+  const openBankingScopes = ['Payment', 'Transaction', 'Banking', 'Information'];
+  const openFinanceScopes = ['Banking', 'Transaction', 'Payment', 'Insurance', 'Lending', 'Pension', 'Mortgage', 'CreditData', 'NBFC'];
+  
+  const availableScopes = scope === 'Open Finance' ? openFinanceScopes : openBankingScopes;
   
   return (
     <div className="space-y-8">
@@ -22,14 +25,14 @@ const PermissionsStep = ({ formData, toggleScope }) => {
               className={`flex flex-col gap-3 p-6 rounded-3xl border-2 cursor-pointer transition-all duration-300 ${
                 formData.scopes.includes(scope)
                   ? 'bg-primary-orange/5 border-primary-orange shadow-lg shadow-primary-orange/10'
-                  : 'bg-white dark:bg-white/5 border-gray-100 dark:border-white/10 hover:border-primary-orange/30'
+                  : 'bg-gray-50 dark:bg-dark-input/20 border-gray-100 dark:border-white/10 hover:border-primary-orange/30'
               }`}
             >
               <div className="flex items-center justify-between">
                 <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all ${
                   formData.scopes.includes(scope)
                     ? 'bg-primary-orange border-primary-orange text-white'
-                    : 'bg-white dark:bg-darkbg border-gray-200 dark:border-white/20'
+                    : 'bg-gray-200 dark:bg-dark-input border-gray-300 dark:border-white/20'
                 }`}>
                   {formData.scopes.includes(scope) && <Check size={14} className="stroke-[3px]" />}
                 </div>

@@ -76,7 +76,12 @@ const GroupingForm = ({ fields, onApply, onCancel }) => {
     setSelectedFieldUuids(prev => prev.filter(id => id !== uuid));
   };
 
-  const tableHeaders = ['Field Name', 'Source CDM', 'Data Type', 'Action'];
+  const tableHeaders = [
+    { label: 'Field Name', key: 'field_name' }, 
+    { label: 'Source CDM', key: 'cdm_name' }, 
+    { label: 'Data Type', key: 'type' }, 
+    { label: 'Action', key: null }
+  ];
   const renderRow = (item) => (
     <>
       <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{item.field_name || item.name}</td>
@@ -170,6 +175,7 @@ const GroupingForm = ({ fields, onApply, onCancel }) => {
                   onChange={(e) => handleChange('data_type', e.target.value)}
                   className={inputClass}
                 >
+                  <option value="">Select Data Type</option>
                   {['string', 'number', 'boolean', 'date', 'object', 'array'].map(t => (
                     <option key={t} value={t} className={isDark ? "bg-[#2f3349]" : ""}>{t}</option>
                   ))}
@@ -182,6 +188,7 @@ const GroupingForm = ({ fields, onApply, onCancel }) => {
                   value={formData.version} 
                   onChange={(e) => handleChange('version', e.target.value)}
                   className={inputClass} 
+                  placeholder="e.g. 1.0.0"
                 />
               </div>
               <div className="col-span-2">
@@ -202,6 +209,7 @@ const GroupingForm = ({ fields, onApply, onCancel }) => {
                   value={formData.default_value} 
                   onChange={(e) => handleChange('default_value', e.target.value)}
                   className={inputClass} 
+                  placeholder="e.g. N/A or 0"
                 />
               </div>
               <div className="col-span-1">
@@ -212,6 +220,7 @@ const GroupingForm = ({ fields, onApply, onCancel }) => {
                   onChange={(e) => handleChange('clasification', e.target.value)}
                   className={inputClass}
                 >
+                  <option value="">Select Classification</option>
                   {['Public', 'Internal', 'Confidential', 'Restricted'].map(c => (
                     <option key={c} value={c} className={isDark ? "bg-[#2f3349]" : ""}>{c}</option>
                   ))}

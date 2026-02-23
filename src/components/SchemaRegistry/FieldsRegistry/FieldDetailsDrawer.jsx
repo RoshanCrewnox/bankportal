@@ -56,19 +56,23 @@ const FieldDetailsDrawer = ({ isOpen, onClose, field, mode = 'view', onUpdate })
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label htmlFor="field-name" className={labelClass}>Field Name</label>
-              <input id="field-name" value={formData.field_name || ''} readOnly className={inputClass} />
-            </div>
-            <div>
-              <label htmlFor="field-uuid" className={labelClass}>Field UUID</label>
-              <input id="field-uuid" value={formData.field_uuid || ''} readOnly className={inputClass} />
+              <input 
+                id="field-name" 
+                value={formData.field_name || ''} 
+                onChange={(e) => handleChange('field_name', e.target.value)}
+                readOnly={!isEdit} 
+                className={inputClass} 
+              />
             </div>
             <div>
               <label htmlFor="cdm-name" className={labelClass}>CDM Name</label>
-              <input id="cdm-name" value={formData.cdm_name || ''} readOnly className={inputClass} />
-            </div>
-            <div>
-              <label htmlFor="cdm-uuid" className={labelClass}>CDM UUID</label>
-              <input id="cdm-uuid" value={formData.cdm_uuid || ''} readOnly className={inputClass} />
+              <input 
+                id="cdm-name" 
+                value={formData.cdm_name || ''} 
+                onChange={(e) => handleChange('cdm_name', e.target.value)}
+                readOnly={!isEdit} 
+                className={inputClass} 
+              />
             </div>
             <div className="col-span-2">
               <label htmlFor="field-path" className={labelClass}>Field Path</label>

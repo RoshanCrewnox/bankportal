@@ -1,10 +1,56 @@
-import React from 'react';
-import { FileJson, MoreVertical, ExternalLink } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { FileJson, MoreVertical, ExternalLink, ArrowUp, ArrowDown } from 'lucide-react';
 
 /**
  * Presentational component for Schema Table
  */
 const SchemaTable = ({ schemas, loading, isDark, borderClass, cardBgClass }) => {
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
+
+  const requestSort = (key) => {
+    let direction = 'asc';
+    if (sortConfig.key === key && sortConfig.direction === 'asc') direction = 'desc';
+    setSortConfig({ key, direction });
+  };
+
+  const sortedSchemas = useMemo(() => {
+    let sortableItems = [...schemas];
+    if (sortConfig.key !== null) {
+      sortableItems.sort((a, b) => {
+        let aVal = a[sortConfig.key];
+        let bVal = b[sortConfig.key];
+        if (aVal === undefined || aVal === null) aVal = '';
+        if (bVal === undefined || bVal === null) bVal = '';
+        if (typeof aVal === 'string') aVal = aVal.toLowerCase();
+        if (typeof bVal === 'string') bVal = bVal.toLowerCase();
+
+        if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
+        if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
+        return 0;
+      });
+    }
+    return sortableItems;
+  }, [schemas, sortConfig]);
+
+  const SortIcon = ({ sortKey }) => (
+    <span className={`ml-1 flex flex-col items-center justify-center transition-opacity ${sortConfig.key === sortKey ? 'opacity-100' : 'opacity-0 group-hover:opacity-50'}`}>
+      <ArrowUp className={`w-3 h-3 ${sortConfig.key === sortKey && sortConfig.direction === 'asc' ? 'text-primary-orange' : 'text-gray-400'}`} />
+      <ArrowDown className={`w-3 h-3 -mt-1 ${sortConfig.key === sortKey && sortConfig.direction === 'desc' ? 'text-primary-orange' : 'text-gray-400'}`} />
+    </span>
+  );
+
+  const HeaderCell = ({ label, sortKey, className = "" }) => (
+    <th 
+      className={`px-6 py-4 text-sm font-bold tracking-wider text-gray-900 dark:text-gray-100 cursor-pointer select-none group hover:text-black dark:hover:text-white transition-colors ${className}`}
+      onClick={() => sortKey && requestSort(sortKey)}
+    >
+      <div className={`flex items-center ${className.includes('text-left') ? '' : ''}`}>
+        {label}
+        {sortKey && <SortIcon sortKey={sortKey} />}
+      </div>
+    </th>
+  );
+
   if (loading) {
     return (
       <div className={`rounded-2xl border ${borderClass} ${cardBgClass} p-8 flex justify-center`}>
@@ -27,16 +73,16 @@ const SchemaTable = ({ schemas, loading, isDark, borderClass, cardBgClass }) => 
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className={isDark ? 'bg-white/5' : 'bg-gray-50'}>
-              <th className="px-6 py-4 text-sm font-semibold tracking-wider text-gray-500">Schema Name</th>
-              <th className="px-6 py-4 text-sm font-semibold tracking-wider text-gray-500">Version</th>
-              <th className="px-6 py-4 text-sm font-semibold tracking-wider text-gray-500">Format</th>
-              <th className="px-6 py-4 text-sm font-semibold tracking-wider text-gray-500">Status</th>
-              <th className="px-6 py-4 text-sm font-semibold tracking-wider text-gray-500">Last Updated</th>
-              <th className="px-6 py-4 text-sm font-semibold tracking-wider text-gray-500 text-right">Actions</th>
+              <HeaderCell label="Schema Name" sortKey="name" />
+              <HeaderCell label="Version" sortKey="version" />
+              <HeaderCell label="Format" sortKey="format" />
+              <HeaderCell label="Status" sortKey="status" />
+              <HeaderCell label="Last Updated" sortKey="lastUpdated" />
+              <th className="px-6 py-4 text-sm font-bold tracking-wider text-gray-900 dark:text-gray-100 text-left">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-700/10">
-            {schemas.map((schema) => (
+            {sortedSchemas.map((schema) => (
               <tr key={schema.id} className={`hover:bg-primary-orange/5 transition-colors ${isDark ? 'hover:bg-white/5' : 'hover:bg-gray-50'}`}>
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-3">
@@ -62,8 +108,8 @@ const SchemaTable = ({ schemas, loading, isDark, borderClass, cardBgClass }) => 
                   </span>
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-500">{schema.lastUpdated}</td>
-                <td className="px-6 py-4 text-right">
-                  <div className="flex justify-end gap-2">
+                <td className="px-6 py-4 text-left">
+                  <div className="flex justify-start gap-2">
                     <button className="p-1 hover:text-primary-orange transition-colors" title="View Details">
                       <ExternalLink className="w-4 h-4" />
                     </button>

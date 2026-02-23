@@ -1,4 +1,6 @@
 import schemaRegistry from './schemaRegistryService';
+import assetLaunchPad from './assetLaunchPad';
+import smartEstimationRules from './smartEstimationRules';
 
 const services = {
   user: {
@@ -22,7 +24,9 @@ const services = {
       console.log("Logged out");
     }
   },
-  schemaRegistry
+  schemaRegistry,
+  assetLaunchPad,
+  smartEstimationRules
 };
 
 export default services;
