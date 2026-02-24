@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Plus, Search, Filter } from 'lucide-react';
 import useProvisioning from '../../hooks/useProvisioning';
 import ProvisioningTabs from '../../components/Provisioning/ProvisioningTabs';
@@ -10,6 +10,9 @@ import Drawer from '../../components/common/Drawer';
 
 const Provisioning = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const context = location.pathname.includes('/open-banking') ? 'OB' : 'OF';
+  
   const [fieldsDrawer, setFieldsDrawer] = useState({ isOpen: false, tpp: null });
   const {
     activeTab,
@@ -32,7 +35,7 @@ const Provisioning = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Provisioning Management</h1>
-          <p className="text-gray-500 dark:text-gray-400 text-sm">Manage TPP access and API provisioning for Open Banking.</p>
+          <p className="text-gray-500 dark:text-gray-400 text-sm">Manage TPP access and API provisioning for {context === 'OB' ? 'Open Banking' : 'Open Finance'}.</p>
         </div>
       </div>
 
@@ -52,7 +55,7 @@ const Provisioning = () => {
                  <div className="flex items-center gap-3">
                     {activeTab === 'TPP' && (
                         <button 
-                            onClick={() => navigate('/open-banking/tpp-onboarding')}
+                            onClick={() => navigate(context === 'OB' ? '/open-banking/tpp-onboarding' : '/open-finance/tpp-onboarding')}
                             className="flex items-center gap-2 bg-[#f8f9fa] dark:bg-white/5 hover:bg-[#eff1f3] dark:hover:bg-white/10 text-gray-700 dark:text-white px-4 py-2 rounded-lg font-bold border border-gray-200 dark:border-white/10 transition-all whitespace-nowrap"
                         >
                             <Plus className="w-4 h-4 text-primary-orange" />
@@ -86,6 +89,7 @@ const Provisioning = () => {
                 <ProvisioningTable 
                     data={data} 
                     activeTab={activeTab} 
+                    context={context}
                     totalItems={totalItems}
                     currentPage={currentPage}
                     onPageChange={handlePageChange}

@@ -11,6 +11,7 @@ import SchemaRegistryPage from '../pages/SchemaRegistry/SchemaRegistryPage';
 import FieldsRegistryPage from '../pages/SchemaRegistry/FieldsRegistryPage';
 import SchemaFlowPage from '../pages/SchemaRegistry/SchemaFlowPage';
 import AssetLaunchPad from '../pages/AssetLaunchPad/AssetLaunchPad';
+import Configuration from '../pages/Configuration/Configuration';
 
 /**
  * Public routes that do not require authentication
@@ -114,6 +115,11 @@ export const privateRoutes = [
     name: 'Asset Launch Pad',
     path: 'asset-launchpad',
     element: <AssetLaunchPad />
+  },
+  {
+    name: 'Configuration',
+    path: 'configuration',
+    element: <Configuration />
   },
   {
     name: 'Root',

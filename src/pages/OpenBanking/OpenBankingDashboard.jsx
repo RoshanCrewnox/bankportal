@@ -67,7 +67,7 @@ const OpenBankingDashboard = () => {
                 <button 
                   key={interval}
                   onClick={() => setTimeInterval(interval)}
-                  className={`px-3 py-1 text-xs font-bold uppercase rounded-md transition-all ${timeInterval === interval ? 'bg-primary-orange text-white shadow-sm' : 'text-gray-500'}`}
+                  className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${timeInterval === interval ? 'bg-primary-orange text-white shadow-sm' : 'text-gray-500'}`}
                 >
                   {interval}
                 </button>
@@ -95,13 +95,13 @@ const OpenBankingDashboard = () => {
                 <MatrixChart theme={theme} type="bar" title="Consent Type Distribution" height={450} labels={data.matrix.consent.labels} data={data.matrix.consent.data} />
             </div>
             <div className={`rounded-2xl border ${borderClass} ${cardBgClass} dark:bg-secondary-dark-bg! p-6 flex flex-col items-center justify-center text-center`}>
-                <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-6">Health Check</h3>
+                <h3 className="text-sm font-bold text-gray-400 tracking-wider mb-6">Health Check</h3>
                 <div className="space-y-4 w-full">
                     <div className="flex justify-between items-center p-3 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5">
                         <span className="text-sm font-medium">Gateway Status</span>
                         <div className="flex items-center gap-2">
                             <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                            <span className="text-xs text-green-500 font-bold uppercase">Healthy</span>
+                            <span className="text-xs text-green-500 font-bold">Healthy</span>
                         </div>
                     </div>
                     <div className="flex justify-between items-center p-3 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5">

@@ -89,7 +89,7 @@ const TppOnboardingPage = () => {
                       )}
                     </div>
                     <div className="flex flex-col">
-                      <span className={`text-[10px] font-black uppercase tracking-widest ${currentStep === step.id ? 'text-primary-orange' : 'text-gray-400'}`}>
+                      <span className={`text-[10px] font-black tracking-widest ${currentStep === step.id ? 'text-primary-orange' : 'text-gray-400'}`}>
                         Step {step.id}
                       </span>
                       <span className={`text-sm font-bold ${currentStep === step.id ? 'text-gray-900 dark:text-white' : 'text-gray-500'}`}>
@@ -138,7 +138,7 @@ const TppOnboardingPage = () => {
                     : 'bg-gray-200 dark:bg-white/5 text-gray-400 dark:text-gray-600 cursor-not-allowed opacity-50'
                 }`}
               >
-                {currentStep === 4 ? 'Complete Onboarding' : 'Next Step'}
+                {currentStep === 4 ? 'Complete onboarding' : 'Next step'}
                 {currentStep < 4 && <ArrowRight size={16} />}
               </button>
             </div>

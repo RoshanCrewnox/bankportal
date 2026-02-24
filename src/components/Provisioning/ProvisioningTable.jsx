@@ -3,7 +3,7 @@ import { ThemeContext } from '../common/ThemeContext';
 import { Eye, Pencil, FilePlus } from 'lucide-react';
 import DataTable from '../common/DataTable';
 
-const ProvisioningTable = ({ data, activeTab, onEdit, onView, onAddFields, totalItems, currentPage, onPageChange }) => {
+const ProvisioningTable = ({ data, activeTab, onEdit, onView, onAddFields, totalItems, currentPage, onPageChange, context }) => {
     const { theme } = useContext(ThemeContext);
 
     const getHeaders = () => {
@@ -145,7 +145,7 @@ const ProvisioningTable = ({ data, activeTab, onEdit, onView, onAddFields, total
             title: "View Details",
             className: "text-gray-400 hover:text-blue-500"
         },
-        ...(activeTab === 'TPP' ? [{
+        ...(activeTab === 'TPP' && context === 'OF' ? [{
             icon: FilePlus,
             onClick: onAddFields,
             title: "Add Fields",

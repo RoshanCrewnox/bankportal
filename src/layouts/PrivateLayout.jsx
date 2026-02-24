@@ -3,12 +3,15 @@ import { Outlet } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import Header from './Header';
 import { ThemeContext } from "../components/common/ThemeContext";
+import useSessionManager from "../hooks/auth/useSessionManager";
+import SessionTimeoutPopup from "../components/auth/SessionTimeoutPopup";
 
 const PrivateLayout = () => {
   const [expanded, setExpanded] = useState(window.innerWidth >= 1024);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const { theme } = useContext(ThemeContext);
+  const { showPopup, timeLeft, extendSession, logout } = useSessionManager();
 
   useEffect(() => {
     const handleResize = () => {
@@ -64,6 +67,13 @@ const PrivateLayout = () => {
           </div>
         </div>
       </div>
+
+      <SessionTimeoutPopup 
+        show={showPopup}
+        timeLeft={timeLeft}
+        onStayLoggedIn={extendSession}
+        onLogout={logout}
+      />
     </div>
   );
 };

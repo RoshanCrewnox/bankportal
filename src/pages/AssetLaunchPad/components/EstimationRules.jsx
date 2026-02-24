@@ -5,12 +5,14 @@ import Tooltip from "../../../components/common/Tooltip";
 import toast from "react-hot-toast";
 import services from "../../../services";
 import { ThemeContext } from "../../../components/common/ThemeContext";
-import { hasPermissionById } from "../../../utils/rbacUtils";
 import getCurrencySymbol from "../../../components/common/currencyIcon";
 
 export default function EstimationRules() {
   const { theme } = useContext(ThemeContext);
   const [activeTab, setActiveTab] = useState("rate-scaling");
+  const orgCurrency = useSelector(
+    (state) => state.currency?.orgCurrency || "USD",
+  ); // Get organization currency
   const [isEditingRateScaling, setIsEditingRateScaling] = useState(false);
   const [isEditingThrottle, setIsEditingThrottle] = useState(false);
   const [isEditingTiered, setIsEditingTiered] = useState(false);
@@ -38,20 +40,7 @@ export default function EstimationRules() {
     t_ratio_month: 0,
   });
   const [throttleErrors, setThrottleErrors] = useState({});
-  const roleData = useSelector((state) => state.role.roleData);
-  const orgCurrency = useSelector(
-    (state) => state.currency?.orgCurrency || "USD",
-  ); // Get organization currency
-  const [permissions, setPermissions] = useState({});
-
-  useEffect(() => {
-    if (roleData) {
-      const canEdit = hasPermissionById(roleData, "CX-012-005");
-      setPermissions({
-        canEdit,
-      });
-    }
-  }, [roleData]);
+  const permissions = { canEdit: true };
 
   const validateTiers = (tiers) => {
     const newErrors = {};

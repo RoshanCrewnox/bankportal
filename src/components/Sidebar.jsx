@@ -13,16 +13,13 @@ const NewSidebar = ({ sidebarOpen, setSidebarOpen }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const currentPath = location.pathname;
-  const [openMenus, setOpenMenus] = useState({});
+  const [expandedMenuId, setExpandedMenuId] = useState(null);
   const { theme } = useContext(ThemeContext);
   const [filteredNavItems, setFilteredNavItems] = useState([]);
   const roleData = useSelector((state) => state.role.roleData);
 
   const toggleSubmenu = (id) => {
-    setOpenMenus((prev) => {
-      const isCurrentlyOpen = prev[id];
-      return { [id]: !isCurrentlyOpen };
-    });
+    setExpandedMenuId(prev => prev === id ? null : id);
   };
 
   const normalizeName = (name) => {
@@ -30,9 +27,12 @@ const NewSidebar = ({ sidebarOpen, setSidebarOpen }) => {
   };
 
   useEffect(() => {
-    // Start with items from config
     setFilteredNavItems(sidebarItems);
-  }, [roleData]);
+    
+    // Auto-expand the active menu on mount
+    const activeItem = sidebarItems.find(item => item.hasSubmenu && isSubActive(item.submenu));
+    setExpandedMenuId(activeItem ? activeItem.id : null);
+  }, [roleData, currentPath]); // currentPath dependency ensures expansion when navigating back/forward
 
   const isPathActive = (path) => {
     if (!path) return false;
@@ -79,7 +79,7 @@ const NewSidebar = ({ sidebarOpen, setSidebarOpen }) => {
           <ul className="flex flex-col gap-1">
             {filteredNavItems?.map((item) => {
               const isActive = item.hasSubmenu ? isSubActive(item.submenu) : isPathActive(item.pathname);
-              const isItemExpanded = openMenus[item.id] || (isActive && openMenus[item.id] !== false);
+              const isItemExpanded = expandedMenuId === item.id;
 
               return (
                 <li key={item.id} className="w-full">

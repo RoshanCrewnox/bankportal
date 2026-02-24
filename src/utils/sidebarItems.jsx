@@ -1,5 +1,5 @@
 import React from 'react';
-import { Building2, LayoutDashboard, Settings2, ShieldCheck, FileJson, Coins, Rocket } from "lucide-react";
+import { Building2, LayoutDashboard, Settings2, ShieldCheck, FileJson, Coins, Rocket, Settings } from "lucide-react";
 
 /**
  * Sidebar navigation configuration
@@ -80,5 +80,11 @@ export const sidebarItems = [
     name: "Asset Launch Pad",
     icon: <Rocket className="w-5 h-5" />,
     pathname: "/asset-launchpad",
+  },
+  {
+    id: "configuration",
+    name: "Configuration",
+    icon: <Settings className="w-5 h-5" />,
+    pathname: "/configuration",
   },
 ];

@@ -230,10 +230,10 @@ const ProvisioningFieldsDrawer = ({ tpp, onClose }) => {
 
       {/* Floating Action Footer */}
       <div className={`absolute bottom-0 left-0 right-0 p-8 pt-10 bg-linear-to-t ${isDark ? 'from-[#1e2132] via-[#1e2132] to-[#1e2132]/0' : 'from-white via-white to-white/0'} pointer-events-none`}>
-        <div className="max-w-xl mx-auto flex gap-4 pointer-events-auto">
+        <div className="flex justify-end gap-3 pointer-events-auto">
           <button 
             onClick={onClose}
-            className={`flex-1 py-4 px-6 rounded-2xl font-bold text-sm transition-all border ${
+            className={`py-2 px-6 rounded-xl font-bold text-xs transition-all border ${
               isDark ? 'bg-white/5 border-white/10 text-white hover:bg-white/10' : 'bg-white border-gray-100 text-gray-600 hover:bg-gray-50'
             }`}
           >
@@ -242,16 +242,16 @@ const ProvisioningFieldsDrawer = ({ tpp, onClose }) => {
           <button 
             onClick={handleSave}
             disabled={isSaving}
-            className="flex-2 py-4 px-6 rounded-2xl bg-primary-orange text-white font-bold text-sm shadow-xl shadow-primary-orange/30 hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:grayscale"
+            className="py-2 px-6 rounded-xl bg-primary-orange text-white font-bold text-xs shadow-lg shadow-primary-orange/20 hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:grayscale"
           >
             {isSaving ? (
               <>
-                <div className="w-5 h-5 border-3 border-white/30 border-t-white rounded-full animate-spin" />
-                Updating TPP Provisioning...
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                Processing...
               </>
             ) : (
               <>
-                <Save className="w-5 h-5" />
+                <Save className="w-4 h-4" />
                 Apply Access Rules
               </>
             )}
