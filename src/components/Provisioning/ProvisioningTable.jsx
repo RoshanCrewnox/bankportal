@@ -34,6 +34,8 @@ const ProvisioningTable = ({ data, activeTab, onEdit, onView, onAddFields, total
             case 'APIs':
                 return [
                   {label: 'API Name', key: 'api_name'}, 
+                  {label: 'Method', key: 'method'},
+                  {label: 'Package', key: 'package_name'},
                   {label: 'Scope', key: 'scope'}, 
                   {label: 'Onboarding Date', key: 'onboardingDate'}, 
                   {label: 'Status', key: 'api_status'}, 
@@ -90,37 +92,52 @@ const ProvisioningTable = ({ data, activeTab, onEdit, onView, onAddFields, total
                                 item.scope === 'OF' ? 'bg-indigo-100 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400' :
                                 'bg-blue-100 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400'
                             }`}>
-                                {item.scope || 'OB'}
+                                {item.scope || ''}
                             </span>
                         </td>
-                        <td className="px-6 py-4 text-gray-500 dark:text-gray-400 text-xs">{item.onboardingDate || '2024-02-20'}</td>
+                        <td className="px-6 py-4 text-gray-500 dark:text-gray-400 text-xs">{item.onboardingDate || ''}</td>
                         <td className="px-6 py-4">
                              <StatusBadge status={item.status} />
                         </td>
-                        <td className="px-6 py-4 text-gray-500 dark:text-gray-400 text-sm">{item.domain || 'Banking'}</td>
-                        <td className="px-6 py-4 text-gray-500 dark:text-gray-400 text-sm">{item.subdomain || 'Retail'}</td>
-                        <td className="px-6 py-4 text-gray-500 dark:text-gray-400 text-xs font-bold">{item.access || 'Full'}</td>
+                        <td className="px-6 py-4 text-gray-500 dark:text-gray-400 text-sm">{item.domain || ''}</td>
+                        <td className="px-6 py-4 text-gray-500 dark:text-gray-400 text-sm">{item.subdomain || ''}</td>
+                        <td className="px-6 py-4 text-gray-500 dark:text-gray-400 text-xs font-bold">{item.access || ''}</td>
                     </>
                 )}
                 {activeTab === 'APIs' && (
                     <>
-                        <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{item.api_name || item.name}</td>
+                        <td className="px-6 py-4 font-medium text-gray-900 dark:text-white truncate max-w-[150px]">{item.api_name || item.name}</td>
+                        <td className="px-6 py-4">
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest ${
+                                item.method === 'POST' ? 'bg-blue-600 text-white' : 
+                                item.method === 'GET' ? 'bg-green-600 text-white' : 
+                                item.method === 'PUT' ? 'bg-orange-500 text-white' :
+                                'bg-gray-500 text-white'
+                            }`}>
+                                {item.method || ''}
+                            </span>
+                        </td>
+                        <td className="px-6 py-4 text-gray-400 dark:text-gray-500 text-xs italic font-medium truncate max-w-[120px]">{item.package_name || ''}</td>
                         <td className="px-6 py-4">
                             <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
                                 item.scope === 'Both' ? 'bg-purple-100 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400' :
                                 item.scope === 'OF' ? 'bg-indigo-100 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400' :
                                 'bg-blue-100 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400'
                             }`}>
-                                {item.scope || 'OB'}
+                                {item.scope || ''}
                             </span>
                         </td>
-                        <td className="px-6 py-4 text-gray-500 dark:text-gray-400 text-xs">{item.onboardingDate || '2024-02-25'}</td>
-                        <td className="px-6 py-4">
+                        <td className="px-6 py-4 text-gray-500 dark:text-gray-400 text-xs">{item.onboardingDate || ''}</td>
+                        <td className="px-6 py-4 text-left">
                              <StatusBadge status={item.api_status || item.status} />
                         </td>
-                        <td className="px-6 py-4 text-gray-500 dark:text-gray-400 text-sm">{item.domain || 'BFSI'}</td>
-                        <td className="px-6 py-4 text-gray-500 dark:text-gray-400 text-xs font-bold">{item.access || 'Full'}</td>
-                        <td className="px-6 py-4 text-gray-500 dark:text-gray-400 font-mono text-xs">{item.cdmid || (item.scope === 'OB' ? 'N/A' : 'CDM-882')}</td>
+                        <td className="px-6 py-4 text-gray-500 dark:text-gray-400 text-sm whitespace-nowrap">{item.domain || ''}</td>
+                        <td className="px-6 py-4 text-gray-500 dark:text-gray-400 text-xs font-bold">{item.access || ''}</td>
+                        <td className="px-6 py-4 text-center">
+                            <span className="text-primary-orange dark:text-orange-400 font-mono text-xs font-bold">
+                                {item.cdmid || ''}
+                            </span>
+                        </td>
                     </>
                 )}
                 {activeTab === 'Customer' && (
@@ -159,10 +176,20 @@ const ProvisioningTable = ({ data, activeTab, onEdit, onView, onAddFields, total
         }
     ];
 
+    const filteredData = data.filter(item => {
+        if (!item.scope) return true; // Show items without scope (legacy)
+        if (context === 'OB') {
+            return item.scope === 'OB' || item.scope === 'Both';
+        } else if (context === 'OF') {
+            return item.scope === 'OF' || item.scope === 'Both';
+        }
+        return true;
+    });
+
     return (
         <DataTable 
             headers={getHeaders()}
-            data={data}
+            data={filteredData}
             renderRow={renderRow}
             actions={actions}
             emptyMessage={`No records found for ${activeTab}`}

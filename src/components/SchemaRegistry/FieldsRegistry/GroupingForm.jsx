@@ -4,6 +4,8 @@ import Button from '../../common/Button';
 import DataTable from '../../common/DataTable';
 import { ThemeContext } from '../../common/ThemeContext';
 import MultiSelectDropdown from './MultiSelectDropdown';
+import CustomSelect from '../../OpenBanking/CustomSelect';
+import { MASKING_ALGORITHMS } from '../../../utils/maskingConstants';
 
 const SectionHeader = ({ icon: Icon, title, isDark }) => (
   <div className={`flex items-center gap-2 mb-4 mt-6 first:mt-0 pb-2 border-b ${isDark ? 'border-white/5' : 'border-gray-100'}`}>
@@ -12,16 +14,17 @@ const SectionHeader = ({ icon: Icon, title, isDark }) => (
   </div>
 );
 
-const GroupingForm = ({ fields, onApply, onCancel }) => {
+const GroupingForm = ({ fields, onApply, onCancel, initialData = null }) => {
+  const isEditMode = !!initialData;
   const { theme } = useContext(ThemeContext);
   const isDark = theme === 'dark';
-  const [groupName, setGroupName] = useState('');
-  const [selectedFieldUuids, setSelectedFieldUuids] = useState([]);
+  const [groupName, setGroupName] = useState(initialData?.groupName || '');
+  const [selectedFieldUuids, setSelectedFieldUuids] = useState(initialData?.selectedFieldUuids || []);
   
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState(() => initialData?.config || {
+    masking_algo: '',
+    encryption_algo: '',
     is_sensetive: false,
-    is_masked: false,
-    is_encrypted: false,
     is_required: false,
     data_type: 'string',
     clasification: 'Public',
@@ -32,6 +35,13 @@ const GroupingForm = ({ fields, onApply, onCancel }) => {
     consent_scope: '',
     semantic_type: ''
   });
+
+  const [activeDropdown, setActiveDropdown] = useState(null); // 'masking' or 'encryption'
+
+  const maskingOptions = useMemo(() => MASKING_ALGORITHMS.filter(a => a.type === 'Masking' || a.type === 'Hashing'), []);
+  const encryptionOptions = useMemo(() => MASKING_ALGORITHMS.filter(a => a.type === 'Encryption'), []);
+
+  const getAlgoName = (id) => MASKING_ALGORITHMS.find(a => a.id === id)?.name || id;
 
   const handleChange = (key, value) => {
     setFormData(prev => ({ ...prev, [key]: value }));
@@ -107,8 +117,12 @@ const GroupingForm = ({ fields, onApply, onCancel }) => {
     <div className={`space-y-6 animate-in slide-in-from-right duration-300 w-full ${isDark ? 'text-white' : 'text-gray-800'}`}>
       <div className={`flex items-center justify-between border-b pb-4 ${isDark ? 'border-white/5' : 'border-gray-100'}`}>
         <div>
-          <h2 className={`text-xl font-bold ${isDark ? 'text-white tracking-tight' : 'text-gray-900 tracking-tight'}`}>Bulk Field Grouping</h2>
-          <p className="text-xs font-semibold text-gray-500 mt-0.5 tracking-wide">Apply common configuration to multiple fields</p>
+          <h2 className={`text-xl font-bold ${isDark ? 'text-white tracking-tight' : 'text-gray-900 tracking-tight'}`}>
+            {isEditMode ? `Edit Group: ${initialData.groupName}` : 'Bulk Field Grouping'}
+          </h2>
+          <p className="text-xs font-semibold text-gray-500 mt-0.5 tracking-wide">
+            {isEditMode ? 'Modify group members and shared configuration' : 'Apply common configuration to multiple fields'}
+          </p>
         </div>
         <button onClick={onCancel} className={`flex items-center gap-2 px-4 py-2 border rounded-xl transition-all text-xs font-bold ${
           isDark ? 'bg-white/5 border-white/10 text-gray-400 hover:text-white hover:bg-white/10' : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100 hover:text-gray-900 shadow-sm'
@@ -228,11 +242,12 @@ const GroupingForm = ({ fields, onApply, onCancel }) => {
               </div>
             </div>
 
-            <SectionHeader icon={Shield} title="Security & Privacy" isDark={isDark} />
-            <div className={`grid grid-cols-2 gap-4 p-4 rounded-xl border ${
+            <SectionHeader icon={Shield} title="Security & Privacy Policies" isDark={isDark} />
+            <div className={`p-6 rounded-2xl border space-y-6 ${
               isDark ? 'bg-primary-orange/5 border-primary-orange/10' : 'bg-orange-50/30 border-orange-100'
             }`}>
-              <div className="space-y-3">
+              {/* Checkbox row */}
+              <div className="flex items-center gap-8">
                 <label className="flex items-center gap-2 cursor-pointer group">
                   <input 
                     type="checkbox" 
@@ -240,7 +255,7 @@ const GroupingForm = ({ fields, onApply, onCancel }) => {
                     onChange={(e) => handleChange('is_required', e.target.checked)}
                     className="w-4 h-4 rounded text-primary-orange accent-primary-orange"
                   />
-                  <span className="text-xs font-medium">Required</span>
+                  <span className="text-xs font-bold text-gray-400 group-hover:text-gray-300">Mandatory Field</span>
                 </label>
                 <label className="flex items-center gap-2 cursor-pointer group">
                   <input 
@@ -249,28 +264,40 @@ const GroupingForm = ({ fields, onApply, onCancel }) => {
                     onChange={(e) => handleChange('is_sensetive', e.target.checked)}
                     className="w-4 h-4 rounded text-primary-orange accent-primary-orange"
                   />
-                  <span className="text-xs font-medium">Sensitive</span>
+                  <span className="text-xs font-bold text-gray-400 group-hover:text-gray-300">PII / Sensitive</span>
                 </label>
               </div>
-              <div className="space-y-3">
-                <label className="flex items-center gap-2 cursor-pointer group">
-                  <input 
-                    type="checkbox" 
-                    checked={formData.is_masked} 
-                    onChange={(e) => handleChange('is_masked', e.target.checked)}
-                    className="w-4 h-4 rounded text-primary-orange accent-primary-orange"
+
+              {/* Dropdown row */}
+              <div className="grid grid-cols-2 gap-4 pt-6 border-t dark:border-white/5 border-gray-100">
+                <div className="relative">
+                  <label className={labelClass}>Masking Algorithm</label>
+                  <CustomSelect 
+                    value={getAlgoName(formData.masking_algo) || "No Masking"}
+                    options={["No Masking", ...maskingOptions.map(a => a.name)]}
+                    onChange={(name) => {
+                      const algo = maskingOptions.find(a => a.name === name);
+                      handleChange('masking_algo', algo ? algo.id : '');
+                    }}
+                    isOpen={activeDropdown === 'masking'}
+                    onToggle={() => setActiveDropdown(activeDropdown === 'masking' ? null : 'masking')}
+                    isDark={isDark}
                   />
-                  <span className="text-xs font-medium">Masked</span>
-                </label>
-                <label className="flex items-center gap-2 cursor-pointer group">
-                  <input 
-                    type="checkbox" 
-                    checked={formData.is_encrypted} 
-                    onChange={(e) => handleChange('is_encrypted', e.target.checked)}
-                    className="w-4 h-4 rounded text-primary-orange accent-primary-orange"
+                </div>
+                <div className="relative">
+                   <label className={labelClass}>Encryption Algorithm</label>
+                   <CustomSelect 
+                    value={getAlgoName(formData.encryption_algo) || "No Encryption"}
+                    options={["No Encryption", ...encryptionOptions.map(a => a.name)]}
+                    onChange={(name) => {
+                      const algo = encryptionOptions.find(a => a.name === name);
+                      handleChange('encryption_algo', algo ? algo.id : '');
+                    }}
+                    isOpen={activeDropdown === 'encryption'}
+                    onToggle={() => setActiveDropdown(activeDropdown === 'encryption' ? null : 'encryption')}
+                    isDark={isDark}
                   />
-                  <span className="text-xs font-medium">Encrypted</span>
-                </label>
+                </div>
               </div>
             </div>
 
@@ -303,9 +330,9 @@ const GroupingForm = ({ fields, onApply, onCancel }) => {
                 icon={<Save size={18} />} 
                 onClick={handleApply}
                 className="w-full py-4 text-sm font-bold shadow-lg shadow-primary-orange/20"
-                disabled={selectedFieldUuids.length === 0 || !groupName}
+                disabled={!groupName}
               >
-                Register Group Configuration
+                {isEditMode ? 'Update Group Configuration' : 'Register Group Configuration'}
               </Button>
             </div>
           </section>

@@ -1,16 +1,39 @@
-import React, { useId, useState } from 'react';
+import React, { useId, useState, useRef, useEffect } from 'react';
 import { ChevronDown, Search, Check } from 'lucide-react';
 
 const CustomSelect = ({ label, value, options, onChange, searchable = false, isOpen, onToggle, disabled = false }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const listboxId = useId();
+    const containerRef = useRef(null);
     
-    const filteredOptions = options.filter(opt => 
-        opt.toLowerCase().includes(searchTerm.toLowerCase())
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (isOpen && containerRef.current && !containerRef.current.contains(event.target)) {
+                onToggle();
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [isOpen, onToggle]);
+
+    const normalizedOptions = React.useMemo(() => {
+        return (options || []).map(opt => {
+            if (typeof opt === 'object' && opt !== null) {
+                return opt;
+            }
+            return { label: String(opt), value: opt };
+        });
+    }, [options]);
+
+    const selectedOption = normalizedOptions.find(opt => opt.value === value);
+
+    const filteredOptions = normalizedOptions.filter(opt => 
+        (opt.label || '').toLowerCase().includes((searchTerm || '').toLowerCase())
     );
 
     return (
-        <div className={`space-y-1.5 relative ${disabled ? 'opacity-60 grayscale-[0.5]' : ''}`}>
+        <div ref={containerRef} className={`space-y-1.5 relative ${disabled ? 'opacity-60 grayscale-[0.5]' : ''}`}>
             {label && <p className="text-xs text-gray-400 font-semibold tracking-wide ml-1">{label}</p>}
             <div 
                 role="combobox"
@@ -32,7 +55,7 @@ const CustomSelect = ({ label, value, options, onChange, searchable = false, isO
                 }}
                 className={`w-full p-3 bg-gray-50 dark:bg-darkbg border border-gray-100 dark:border-white/5 rounded-xl flex items-center justify-between group transition-all font-bold text-gray-800 dark:text-gray-100 ${disabled ? 'cursor-not-allowed' : 'cursor-pointer hover:border-primary-orange/30'}`}
             >
-                <span className="text-sm">{value}</span>
+                <span className="text-sm">{selectedOption ? selectedOption.label : (value || 'Select...')}</span>
                 {!disabled && <ChevronDown className={`w-4 h-4 text-gray-400 group-hover:text-primary-orange transition-transform ${isOpen ? 'rotate-180' : ''}`} />}
             </div>
 
@@ -62,27 +85,27 @@ const CustomSelect = ({ label, value, options, onChange, searchable = false, isO
                         {filteredOptions.length > 0 ? (
                             filteredOptions.map((opt) => (
                                 <div 
-                                    key={opt}
+                                    key={opt.value}
                                     role="option"
                                     tabIndex={0}
-                                    aria-selected={value === opt}
+                                    aria-selected={value === opt.value}
                                     onClick={() => {
-                                        onChange(opt);
+                                        onChange(opt.value);
                                         onToggle();
                                         setSearchTerm('');
                                     }}
                                     onKeyDown={(e) => {
                                         if (e.key === 'Enter' || e.key === ' ') {
                                             e.preventDefault();
-                                            onChange(opt);
+                                            onChange(opt.value);
                                             onToggle();
                                             setSearchTerm('');
                                         }
                                     }}
-                                    className={`px-4 py-2.5 text-sm cursor-pointer flex items-center justify-between transition-colors ${value === opt ? 'bg-primary-orange/20 text-primary-orange font-bold' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-primary-orange/5'}`}
+                                    className={`px-4 py-2.5 text-sm cursor-pointer flex items-center justify-between transition-colors ${value === opt.value ? 'bg-primary-orange/20 text-primary-orange font-bold' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-primary-orange/5'}`}
                                 >
-                                    {opt}
-                                    {value === opt && <Check className="w-3.5 h-3.5" />}
+                                    {opt.label}
+                                    {value === opt.value && <Check className="w-3.5 h-3.5" />}
                                 </div>
                             ))
                         ) : (

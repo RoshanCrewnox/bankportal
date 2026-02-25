@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Shield, ArrowLeft, Info } from 'lucide-react';
+import { ArrowLeft, Info } from 'lucide-react';
 import { ThemeContext } from '../../../components/common/ThemeContext';
 import { useDataMasking } from '../../../hooks/useDataMasking';
 import { MASKING_ALGORITHMS } from '../../../utils/maskingConstants';
@@ -11,7 +11,7 @@ import MaskingConfigView from './MaskingConfigView';
  * DataMasking Orchestrator
  * Mandatory Rules: Orchestrates UI + Hooks. NO Business Logic. NO API calls. < 200 lines.
  */
-const DataMasking = () => {
+const DataMasking = ({ onBack }) => {
   const { theme } = useContext(ThemeContext);
   const isDark = theme === 'dark';
   
@@ -95,10 +95,23 @@ const DataMasking = () => {
   // List View
   return (
     <div className={`w-full flex flex-col ${isDark ? 'text-white' : 'text-gray-800'}`}>
-      <div className="flex justify-end mb-6 shrink-0">
-        <button 
+      <div className="flex justify-between items-center mb-6 shrink-0">
+        {onBack && (
+          <button
+            onClick={onBack}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all border ${
+              isDark
+                ? 'bg-white/5 border-white/10 text-gray-400 hover:text-white hover:bg-white/10'
+                : 'bg-gray-50 border-gray-200 text-gray-500 hover:text-gray-800 hover:bg-gray-100'
+            }`}
+          >
+            <ArrowLeft size={16} />
+            Back
+          </button>
+        )}
+        <button
           onClick={handleMaskNewClick}
-          className="px-6 py-2.5 bg-primary-orange text-white rounded-xl font-medium hover:bg-orange-600 transition-colors shadow-lg shadow-orange-500/20"
+          className="px-6 py-2.5 bg-primary-orange text-white rounded-xl font-medium hover:bg-orange-600 transition-colors shadow-lg shadow-orange-500/20 ml-auto"
         >
           Mask New Field
         </button>
@@ -106,11 +119,11 @@ const DataMasking = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-6">
         {MASKING_ALGORITHMS.map(algo => (
-          <AlgorithmCard 
-            key={algo.id} 
-            algo={algo} 
-            isDark={isDark} 
-            onClick={() => handleCardClick(algo.id)} 
+          <AlgorithmCard
+            key={algo.id}
+            algo={algo}
+            isDark={isDark}
+            onClick={() => handleCardClick(algo.id)}
           />
         ))}
       </div>

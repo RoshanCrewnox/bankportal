@@ -1,9 +1,11 @@
-import React, { useContext } from 'react';
-import { Plus, ArrowLeft, Save, Trash2 } from 'lucide-react';
+import React, { useContext, useState } from 'react';
+import { Plus, ArrowLeft, Save, Trash2, Database } from 'lucide-react';
 import Button from '../../common/Button';
 import { ThemeContext } from '../../common/ThemeContext';
 import { useAddFields } from '../../../hooks/SchemaRegistry/useAddFields';
 import MultiSelectDropdown from './MultiSelectDropdown';
+import CustomSelect from '../../OpenBanking/CustomSelect';
+import { ChevronDown, Check, X } from 'lucide-react';
 
 const AddFieldsForm = ({ onSave, onCancel }) => {
   const { theme } = useContext(ThemeContext);
@@ -16,8 +18,17 @@ const AddFieldsForm = ({ onSave, onCancel }) => {
     handleRemoveRow,
     handleCdmChange,
     toggleFieldSelection,
-    handleFinalSave
+    handleFinalSave,
+    existingGroups,
+    bulkGroup,
+    setBulkGroup,
+    applyToAll,
+    setApplyToAll,
+    removeSpecificField,
+    updateFieldGroup
   } = useAddFields(onSave);
+
+  const [activeDropdown, setActiveDropdown] = useState(null); // 'bulk' or key like 'cdmUuid-fieldName'
 
   const selectClass = `w-full ${isDark ? 'bg-secondary-dark-bg/50 border-white/10 text-white' : 'bg-gray-50 border-gray-200 text-gray-900 shadow-sm'} border rounded-xl px-4 py-3 text-sm focus:ring-1 focus:ring-primary-orange outline-none transition-all appearance-none cursor-pointer bg-[right_1rem_center] bg-no-repeat pr-12 ${
     isDark 
@@ -109,35 +120,112 @@ const AddFieldsForm = ({ onSave, onCancel }) => {
 
         {queuedFields.length > 0 && (
           <div className="animate-in fade-in slide-in-from-top-2 duration-300 pt-6 space-y-4">
-            <div className="flex items-baseline justify-between border-b pb-2 border-primary-orange/10 mx-1">
-              <h3 className="text-xs font-bold tracking-wider text-primary-orange">Selected Fields</h3>
-              <span className="text-xs font-semibold text-gray-400 tracking-wide">
-                {queuedFields.length} field{queuedFields.length > 1 ? 's' : ''} total
-              </span>
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6 border-b pb-5 border-white/5 mx-1">
+              <div className="flex items-center gap-4">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-primary-orange/20 text-primary-orange' : 'bg-orange-50 text-primary-orange'}`}>
+                  <Database size={20} />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold tracking-tight text-white">Registration Queue</h3>
+                   <div className="flex items-center gap-2 mt-0.5">
+                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                      {queuedFields.length} field{queuedFields.length > 1 ? 's' : ''} total
+                    </span>
+                    <span className="w-1 h-1 rounded-full bg-gray-600" />
+                    <span className="text-[10px] font-medium text-primary-orange italic">Ready to provision</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Enhanced Bulk Grouping Section */}
+              <div className={`px-5 py-3 rounded-2xl border flex items-center gap-6 transition-all ${isDark ? 'bg-white/3 border-white/5' : 'bg-gray-50/80 border-gray-200 shadow-sm'}`}>
+                <div className="flex items-center gap-3 border-r pr-6 border-white/10">
+                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mr-2">Bulk Actions</span>
+                  <div 
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all cursor-pointer select-none ${applyToAll ? 'border-primary-orange bg-primary-orange/10' : 'border-white/5 bg-white/5'}`} 
+                    onClick={() => setApplyToAll(!applyToAll)}
+                  >
+                    <div className={`w-4 h-4 rounded border flex items-center justify-center transition-all ${applyToAll ? 'bg-primary-orange border-primary-orange' : 'border-gray-600'}`}>
+                      {applyToAll && <Check size={12} className="text-white" />}
+                    </div>
+                    <span className={`text-[11px] font-bold ${applyToAll ? 'text-primary-orange' : 'text-gray-400'}`}>Apply to all</span>
+                  </div>
+                </div>
+
+                <div className="w-56">
+                   <CustomSelect 
+                      value={bulkGroup || "Set global group..."}
+                      options={existingGroups}
+                      onChange={setBulkGroup}
+                      isOpen={activeDropdown === 'bulk'}
+                      onToggle={() => setActiveDropdown(activeDropdown === 'bulk' ? null : 'bulk')}
+                      disabled={!applyToAll}
+                      isDark={isDark}
+                   />
+                </div>
+              </div>
             </div>
 
-            <div className={`rounded-2xl border overflow-hidden ${isDark ? 'border-white/5 bg-white/2' : 'border-gray-100 bg-gray-50/10 shadow-inner'}`}>
-              <div className="max-h-[400px] overflow-y-auto">
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className={`${isDark ? 'bg-white/5' : 'bg-gray-50'} border-b border-gray-100 dark:border-white/5`}>
-                      <th className="px-6 py-4 text-xs font-bold tracking-wider text-gray-400">CDM Source</th>
-                      <th className="px-6 py-4 text-xs font-bold tracking-wider text-gray-400">Field Identifier</th>
-                      <th className="px-6 py-4 text-xs font-bold tracking-wider text-gray-400 text-right">Data Type</th>
+            <div className={`rounded-3xl border ${isDark ? 'border-white/5 bg-white/2' : 'border-gray-100 bg-white shadow-lg'}`}>
+              <div className="max-h-[500px] overflow-y-auto custom-scrollbar min-h-[300px] pb-32">
+                <table className="w-full text-left border-separate border-spacing-0">
+                  <thead className="sticky top-0 z-20">
+                    <tr className={`${isDark ? 'bg-[#1e2235]' : 'bg-gray-50'} border-b border-white/5`}>
+                      <th className="px-8 py-5 text-[10px] font-black tracking-[0.2em] text-gray-500 uppercase">CDM Source</th>
+                      <th className="px-8 py-5 text-[10px] font-black tracking-[0.2em] text-gray-500 uppercase">Field Identifier</th>
+                      <th className="px-8 py-5 text-[10px] font-black tracking-[0.2em] text-gray-500 uppercase">Type</th>
+                      <th className="px-8 py-5 text-[10px] font-black tracking-[0.2em] text-gray-500 uppercase">Category / Group</th>
+                      <th className="px-8 py-5 text-[10px] font-black tracking-[0.2em] text-gray-500 uppercase text-center">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-100 dark:divide-white/5">
-                    {queuedFields.map((q, i) => (
-                      <tr key={i} className="text-xs group hover:bg-white/40 dark:hover:bg-white/2 transition-colors">
-                        <td className="px-6 py-4 text-gray-400 dark:text-gray-400 font-semibold tracking-tight w-1/3">{q.cdm}</td>
-                        <td className="px-6 py-4 font-semibold text-gray-800 dark:text-white tracking-wide">{q.field}</td>
-                        <td className="px-6 py-4 text-right">
-                          <span className="font-bold text-blue-500 dark:text-blue-400 tracking-wider text-xs">
-                            {q.type}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
+                  <tbody className="divide-y divide-white/3">
+                    {queuedFields.map((q, i) => {
+                      const isActiveRow = activeDropdown === q.id;
+                      return (
+                        <tr key={i} className={`group hover:bg-white/4 transition-all duration-300 relative ${isActiveRow ? 'z-50' : 'z-0'}`}>
+                          <td className="px-8 py-5 bg-inherit">
+                            <span className="text-xs font-bold text-gray-400 dark:text-gray-500 tracking-tight">{q.cdm}</span>
+                          </td>
+                          <td className="px-8 py-5 bg-inherit">
+                            <div className="flex items-center gap-2">
+                               <div className="w-1.5 h-1.5 rounded-full bg-primary-orange/50 mt-0.5" />
+                               <span className="text-sm font-bold text-gray-800 dark:text-gray-200 tracking-wide">{q.field}</span>
+                            </div>
+                          </td>
+                          <td className="px-8 py-5 bg-inherit">
+                            <span className="font-bold text-blue-500/80 dark:text-blue-400/80 tracking-widest text-[9px] uppercase px-2.5 py-1 rounded-md bg-blue-500/5 border border-blue-500/10">
+                              {q.type}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 w-64 bg-inherit">
+                            <div className={`p-1 rounded-xl transition-all ${applyToAll ? 'opacity-40 grayscale pointer-events-none' : ''}`}>
+                              <CustomSelect 
+                                value={q.group || "Assign Category..."}
+                                options={existingGroups}
+                                onChange={(val) => updateFieldGroup(q.cdm_uuid, q.field, val)}
+                                isOpen={activeDropdown === q.id}
+                                onToggle={() => setActiveDropdown(activeDropdown === q.id ? null : q.id)}
+                                disabled={applyToAll}
+                                isDark={isDark}
+                              />
+                            </div>
+                          </td>
+                          <td className="px-8 py-5 text-center bg-inherit">
+                            <button 
+                              onClick={() => removeSpecificField(q.cdm_uuid, q.field)}
+                              className={`p-2.5 rounded-xl transition-all flex items-center justify-center mx-auto ${
+                                isDark 
+                                  ? 'text-gray-600 hover:text-red-400 hover:bg-red-400/10' 
+                                  : 'text-gray-300 hover:text-red-500 hover:bg-red-50'
+                              }`}
+                              title="Remove from registration"
+                            >
+                              <X size={18} className="transition-transform group-hover:scale-110" />
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
@@ -146,15 +234,16 @@ const AddFieldsForm = ({ onSave, onCancel }) => {
         )}
       </div>
 
-      <div className={`flex justify-end pt-6 border-t ${isDark ? 'border-white/5' : 'border-gray-100'}`}>
+      <div className={`flex justify-end pt-8 border-t ${isDark ? 'border-white/5' : 'border-gray-100'}`}>
         <Button 
           variant="primary" 
-          icon={<Save size={16} />} 
+          size="lg"
+          icon={<Save size={18} />} 
           onClick={handleFinalSave}
-          className="px-6 py-3.5 text-xs font-bold tracking-wider shadow-[0_8px_20px_rgba(237,127,24,0.25)] hover:shadow-[0_12px_30px_rgba(237,127,24,0.35)] transition-all active:scale-95 rounded-xl"
+          className="px-10 py-4 text-xs font-black uppercase tracking-[0.15em] shadow-[0_12px_40px_rgba(237,127,24,0.3)] hover:shadow-[0_15px_45px_rgba(237,127,24,0.4)] transition-all transform hover:-translate-y-0.5 active:translate-y-0 rounded-2xl"
           disabled={queuedFields.length === 0}
         >
-          Register Selected Fields
+          Provision Selected Fields
         </Button>
       </div>
     </div>

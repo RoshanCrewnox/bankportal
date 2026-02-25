@@ -10,6 +10,7 @@ import ConsentCenter from '../pages/OpenBanking/ConsentCenter';
 import SchemaRegistryPage from '../pages/SchemaRegistry/SchemaRegistryPage';
 import FieldsRegistryPage from '../pages/SchemaRegistry/FieldsRegistryPage';
 import SchemaFlowPage from '../pages/SchemaRegistry/SchemaFlowPage';
+import JSONMapperPage from '../pages/SchemaRegistry/JSONMapperPage';
 import AssetLaunchPad from '../pages/AssetLaunchPad/AssetLaunchPad';
 import Configuration from '../pages/Configuration/Configuration';
 
@@ -108,6 +109,11 @@ export const privateRoutes = [
         name: 'Schema Flow',
         path: 'flow',
         element: <SchemaFlowPage />
+      },
+      {
+        name: 'JSON Mapper',
+        path: 'mapper',
+        element: <JSONMapperPage />
       }
     ]
   },

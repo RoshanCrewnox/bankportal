@@ -1,7 +1,7 @@
 /**
  * Service to handle Schema Registry operations using LocalStorage
  */
-const SCHEMA_KEY = 'bank_portal_schemas';
+const SCHEMA_KEY = 'schema_registry_schemas';
 
 const schemaRegistryService = {
   /**

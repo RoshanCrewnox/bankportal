@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Check, Search } from 'lucide-react';
-import partnerService from '../../services/partnerService';
 import provisioningService from '../../services/provisioningService';
+import schemaRegistryService from '../../services/schemaRegistryService';
+import services from '../../services';
 import MultiSelectDropdown from '../SchemaRegistry/FieldsRegistry/MultiSelectDropdown';
+import CustomSelect from '../OpenBanking/CustomSelect';
+import { BadgeCheck, Info } from 'lucide-react';
 
 const DOMAIN_OPTIONS = [
     { label: "BFSI", value: "BFSI" },
@@ -18,13 +21,6 @@ const SUBDOMAIN_OPTIONS = [
     "Investments", "Insurance", "Pensions", "Loans", "Credit cards", 
     "Wealth management", "BNPL", "Utility bills", "Telco payments", "Crypto"
 ];
-
-const CDM_MAPPING = {
-    "Full": "CDM-DEFAULT-MAX",
-    "Partial": "CDM-DEFAULT-MID",
-    "Limited": "CDM-DEFAULT-MIN",
-    "Trial": "CDM-DEFAULT-TRIAL"
-};
 
 const EMPTY_OPTIONS = [];
 
@@ -89,6 +85,10 @@ const ProvisioningDrawer = ({ item, activeTab, mode = 'view', onSave }) => {
     const [partnerOrgs, setPartnerOrgs] = useState([]);
     const [products, setProducts] = useState([]);
     const [bankCustomers, setBankCustomers] = useState([]);
+    const [apiPackages, setApiPackages] = useState([]);
+    const [selectedPackageMethods, setSelectedPackageMethods] = useState([]);
+    const [cdmList, setCdmList] = useState([]);
+    const [openDropdown, setOpenDropdown] = useState(null); // For CustomSelect
     const [searchTerm, setSearchTerm] = useState('');
     const [loadingData, setLoadingData] = useState(false);
 
@@ -101,14 +101,18 @@ const ProvisioningDrawer = ({ item, activeTab, mode = 'view', onSave }) => {
                 if (activeTab === 'TPP') {
                     const data = await partnerService.getPartnerOrgs();
                     setPartnerOrgs(data || []);
-                } else if (activeTab === 'Products') {
-                    const response = await provisioningService.getProducts();
-                    setProducts(response.data?.items || []);
+                } else if (activeTab === 'APIs') {
+                    const [apiRes, cdmRes] = await Promise.all([
+                        services.assetLaunchPad.FETCH_API_LIST(),
+                        schemaRegistryService.GET_SCHEMAS()
+                    ]);
+                    setApiPackages(apiRes.data?.apis || []);
+                    setCdmList(cdmRes.data || []);
                 } else if (activeTab === 'Customer' && mode === 'bulk-onboard') {
                     const response = await provisioningService.getBankCustomers();
                     setBankCustomers(response.data || []);
                     // Initialize batch settings if not present
-                    if (!formData.region) setFormData(prev => ({ ...prev, region: 'UK', exposure: 'Public' }));
+                    if (!formData.region) setFormData(prev => ({ ...prev, region: '', exposure: '' }));
                 }
             } catch (error) {
                 console.error(`Error fetching data for ${activeTab} drawer:`, error);
@@ -123,15 +127,30 @@ const ProvisioningDrawer = ({ item, activeTab, mode = 'view', onSave }) => {
         const { name, value, type, checked } = e.target;
         const newVal = type === 'checkbox' ? checked : value;
         
-        // Auto-mapping for CDMID based on Access name if Scope is OF or Both
-        if (name === 'access' && (formData.scope === 'OF' || formData.scope === 'Both')) {
-            setFormData({ 
-                ...formData, 
-                [name]: newVal,
-                cdmid: CDM_MAPPING[newVal] || formData.cdmid 
-            });
-        } else {
-            setFormData({ ...formData, [name]: newVal });
+        setFormData(prev => ({ ...prev, [name]: newVal }));
+    };
+
+    const handlePackageChange = async (packageUuid) => {
+        const pkg = apiPackages.find(p => p.api_uuid === packageUuid);
+        if (!pkg) return;
+
+        setLoadingData(true);
+        try {
+            const res = await services.assetLaunchPad.FETCH_API_DETAIL(packageUuid);
+            const methods = res.data?.methods || [];
+            setSelectedPackageMethods(methods);
+            setFormData(prev => ({
+                ...prev,
+                package_name: pkg.api_name,
+                package_uuid: packageUuid,
+                api_name: pkg.api_name, // fallback for legacy
+                method: '', // Reset method when package changes
+                domain: pkg.api_category || prev.domain || ''
+            }));
+        } catch (error) {
+            console.error("Error fetching package details:", error);
+        } finally {
+            setLoadingData(false);
         }
     };
 
@@ -191,7 +210,7 @@ const ProvisioningDrawer = ({ item, activeTab, mode = 'view', onSave }) => {
                                 { label: "Open Finance", value: "Open Finance" }
                             ]} 
                             isViewMode={isViewMode} 
-                            value={formData.scope || 'Open Banking'} 
+                            value={formData.scope || ''} 
                             onChange={(e) => {
                                 const newScope = e.target.value;
                                 setFormData({
@@ -332,35 +351,113 @@ const ProvisioningDrawer = ({ item, activeTab, mode = 'view', onSave }) => {
 
                 {activeTab === 'APIs' && (
                     <>
-                        <ProvisioningField 
-                            label="API Name" 
-                            name="api_name" 
-                            placeholder="e.g. Payments API v1" 
-                            isViewMode={isViewMode} 
-                            value={formData.api_name || formData.name} 
-                            onChange={handleChange} 
-                        />
-                        <ProvisioningField 
-                            label="Scope" 
-                            name="scope" 
-                            type="select"
-                            options={["OB", "OF", "Both"]}
-                            isViewMode={isViewMode} 
-                            value={formData.scope} 
-                            onChange={handleChange} 
-                        />
-                        <ProvisioningField 
-                            label="Onboarding Type" 
-                            name="onboardingType" 
-                            type="select"
-                            options={[
-                                { label: "Immediate (Now)", value: "immediate" },
-                                { label: "Schedule Later", value: "schedule" }
-                            ]} 
-                            isViewMode={isViewMode} 
-                            value={formData.onboardingType || 'immediate'} 
-                            onChange={handleChange} 
-                        />
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1.5">
+                                    Select API Package
+                                </label>
+                                <CustomSelect 
+                                    options={apiPackages.map(p => ({ label: p.api_name, value: p.api_uuid }))}
+                                    value={formData.package_uuid}
+                                    onChange={(val) => handlePackageChange(val)}
+                                    placeholder="Choose an API package..."
+                                    isOpen={openDropdown === 'package'}
+                                    onToggle={() => setOpenDropdown(openDropdown === 'package' ? null : 'package')}
+                                    disabled={isViewMode}
+                                />
+                            </div>
+
+                            {formData.package_uuid && (
+                                <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                                    <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1.5">
+                                        Select API Method
+                                    </label>
+                                    <CustomSelect 
+                                        options={selectedPackageMethods.map(m => ({ 
+                                            label: `${m.method} - ${m.method_name}`, 
+                                            value: m.method_uuid || m.method // fallback if uuid not spec'd
+                                        }))}
+                                        value={formData.method_uuid || formData.method}
+                                        onChange={(val) => {
+                                            const methodObj = selectedPackageMethods.find(m => (m.method_uuid || m.method) === val);
+                                            setFormData(prev => ({ 
+                                                ...prev, 
+                                                method_uuid: val, 
+                                                method: methodObj?.method || val,
+                                                api_name: methodObj?.method_name || prev.package_name
+                                            }));
+                                        }}
+                                        placeholder="Choose a method..."
+                                        isOpen={openDropdown === 'method'}
+                                        onToggle={() => setOpenDropdown(openDropdown === 'method' ? null : 'method')}
+                                        disabled={isViewMode || loadingData}
+                                        loading={loadingData}
+                                    />
+                                </div>
+                            )}
+
+                            {formData.method && (
+                                <div className="p-4 rounded-xl bg-orange-50/50 dark:bg-primary-orange/5 border border-orange-100 dark:border-primary-orange/10 space-y-4 animate-in fade-in zoom-in-95 duration-400">
+                                    <div className="flex items-center gap-3">
+                                        <input 
+                                            type="checkbox" 
+                                            name="attachToCdm" 
+                                            id="attachToCdm"
+                                            checked={formData.attachToCdm || false}
+                                            onChange={(e) => setFormData(prev => ({ ...prev, attachToCdm: e.target.checked }))}
+                                            disabled={isViewMode}
+                                            className="w-4 h-4 rounded text-primary-orange accent-primary-orange border-white/10"
+                                        />
+                                        <label htmlFor="attachToCdm" className="text-sm font-bold text-gray-700 dark:text-gray-200 cursor-pointer">
+                                            Attach this method to a CDM?
+                                        </label>
+                                    </div>
+
+                                    {formData.attachToCdm && (
+                                        <div className="animate-in fade-in slide-in-from-left-2 duration-300">
+                                            <CustomSelect 
+                                                label="Select CDM"
+                                                options={cdmList.map(c => ({ label: `${c.cdm_id} - ${c.cdm_name}`, value: c.cdm_uuid }))}
+                                                value={formData.cdm_uuid}
+                                                onChange={(val) => {
+                                                    const cdm = cdmList.find(c => c.cdm_uuid === val);
+                                                    setFormData(prev => ({ ...prev, cdm_uuid: val, cdmid: cdm?.cdm_id }));
+                                                }}
+                                                placeholder="Choose a CDM..."
+                                                isOpen={openDropdown === 'cdm'}
+                                                onToggle={() => setOpenDropdown(openDropdown === 'cdm' ? null : 'cdm')}
+                                                disabled={isViewMode}
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <ProvisioningField 
+                                label="Scope" 
+                                name="scope" 
+                                type="select"
+                                options={["OB", "OF", "Both"]}
+                                isViewMode={isViewMode} 
+                                value={formData.scope} 
+                                onChange={handleChange} 
+                            />
+                            <ProvisioningField 
+                                label="Onboarding Type" 
+                                name="onboardingType" 
+                                type="select"
+                                options={[
+                                    { label: "Immediate (Now)", value: "immediate" },
+                                    { label: "Schedule Later", value: "schedule" }
+                                ]} 
+                                isViewMode={isViewMode} 
+                                value={formData.onboardingType || 'immediate'} 
+                                onChange={handleChange} 
+                            />
+                        </div>
+
                         {formData.onboardingType === 'schedule' && (
                             <ProvisioningField 
                                 label="Schedule Date" 
@@ -371,35 +468,29 @@ const ProvisioningDrawer = ({ item, activeTab, mode = 'view', onSave }) => {
                                 onChange={handleChange} 
                             />
                         )}
-                        <ProvisioningField 
-                            label="Domain" 
-                            name="domain" 
-                            type="select"
-                            options={DOMAIN_OPTIONS}
-                            isViewMode={isViewMode} 
-                            value={formData.domain} 
-                            onChange={handleChange} 
-                        />
-                        <ProvisioningField 
-                            label="Access" 
-                            name="access" 
-                            type="select" 
-                            options={["Full", "Partial", "Limited", "Trial"]} 
-                            isViewMode={isViewMode} 
-                            value={formData.access} 
-                            onChange={handleChange} 
-                        />
-                        {(formData.scope === 'OF' || formData.scope === 'Both') && (
+                        
+                        <div className="grid grid-cols-2 gap-4">
                             <ProvisioningField 
-                                label="CDMID" 
-                                name="cdmid" 
-                                placeholder="e.g. CDM-882" 
+                                label="Domain" 
+                                name="domain" 
+                                type="select"
+                                options={DOMAIN_OPTIONS}
                                 isViewMode={isViewMode} 
-                                value={formData.cdmid} 
+                                value={formData.domain} 
                                 onChange={handleChange} 
                             />
-                        )}
-                        <div className="flex items-center gap-2 mt-2">
+                            <ProvisioningField 
+                                label="Access" 
+                                name="access" 
+                                type="select" 
+                                options={["Full", "Partial", "Limited", "Trial"]} 
+                                isViewMode={isViewMode} 
+                                value={formData.access} 
+                                onChange={handleChange} 
+                            />
+                        </div>
+
+                        <div className="flex items-center gap-2 p-3 bg-gray-50 dark:bg-white/5 rounded-xl border border-gray-100 dark:border-white/5">
                              <input 
                                 type="checkbox" 
                                 name="strictSchemaValidation" 
@@ -409,8 +500,8 @@ const ProvisioningDrawer = ({ item, activeTab, mode = 'view', onSave }) => {
                                 disabled={isViewMode}
                                 className="w-4 h-4 rounded text-primary-orange accent-primary-orange border-white/10"
                              />
-                             <label htmlFor="strictSchemaValidation" className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                Schema Validation - Strict
+                             <label htmlFor="strictSchemaValidation" className="text-sm font-medium text-gray-500 dark:text-gray-400 cursor-pointer">
+                                Enable Strict Schema Validation
                              </label>
                         </div>
                     </>

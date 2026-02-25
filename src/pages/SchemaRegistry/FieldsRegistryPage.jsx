@@ -3,9 +3,11 @@ import { Database, Plus, Search, Filter, Eye, Pencil, Layers, FolderPlus, Save, 
 import { ThemeContext } from '../../components/common/ThemeContext';
 import Button from '../../components/common/Button';
 import DataTable from '../../components/common/DataTable';
+import EmptyState from '../../components/common/EmptyState';
 import AddFieldsForm from '../../components/SchemaRegistry/FieldsRegistry/AddFieldsForm';
 import FieldDetailsDrawer from '../../components/SchemaRegistry/FieldsRegistry/FieldDetailsDrawer';
 import GroupingForm from '../../components/SchemaRegistry/FieldsRegistry/GroupingForm';
+import GroupsList from '../../components/SchemaRegistry/FieldsRegistry/GroupsList';
 import CustomSelect from '../../components/OpenBanking/CustomSelect';
 
 const initialDrawerState = { isOpen: false, selectedField: null, mode: 'view' };
@@ -28,6 +30,7 @@ const FieldsRegistryPage = () => {
   const isDark = theme === 'dark';
   const [view, setView] = useState('LIST');
   const [fields, setFields] = useState([]);
+  const [groups, setGroups] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [drawerState, dispatchDrawer] = useReducer(drawerReducer, initialDrawerState);
   
@@ -35,6 +38,7 @@ const FieldsRegistryPage = () => {
   const [groupPopover, setGroupPopover] = useState({ isOpen: false, field: null, position: { top: 0, left: 0 } });
   const [selectedTempGroup, setSelectedTempGroup] = useState('');
   const [isSavingGroup, setIsSavingGroup] = useState(false);
+  const [groupToEdit, setGroupToEdit] = useState(null);
   const popoverRef = useRef(null);
 
   useEffect(() => {
@@ -50,8 +54,10 @@ const FieldsRegistryPage = () => {
   }, [groupPopover.isOpen]);
 
   const loadFields = () => {
-    const stored = JSON.parse(localStorage.getItem('CDM_FIELD_REGISTRY') || '[]');
-    setFields(stored);
+    const storedFields = JSON.parse(localStorage.getItem('CDM_FIELD_REGISTRY') || '[]');
+    const storedGroups = JSON.parse(localStorage.getItem('CDM_GROUPS_REGISTRY') || '[]');
+    setFields(storedFields);
+    setGroups(storedGroups);
   };
 
   useEffect(() => {
@@ -98,17 +104,26 @@ const FieldsRegistryPage = () => {
   };
 
   const existingGroups = useMemo(() => {
-    const DEFAULT_GROUPS = ['Identity Fields', 'Financial Data', 'Technical Metadata', 'Regulatory & Compliance', 'Customer Profile'];
-    const groups = new Set(DEFAULT_GROUPS);
+    const groupNames = new Set();
+    // 1. From fields
     fields.forEach(f => {
-      if (f.group_name) groups.add(f.group_name);
+      if (f.group_name) groupNames.add(f.group_name);
     });
-    return Array.from(groups);
-  }, [fields]);
+    // 2. From groups registry
+    groups.forEach(g => {
+      if (g.name) groupNames.add(g.name);
+    });
+    return Array.from(groupNames).sort();
+  }, [fields, groups]);
 
   const handleApplyGroupConfig = ({ selectedFieldUuids, groupName, config }) => {
+    // 1. Update the fields
     const updatedFields = fields.map(field => {
-      if (selectedFieldUuids.includes(field.field_uuid)) {
+      // If this field was in the group but is NOT anymore, or if it IS in the group now
+      const wasInGroup = field.group_name === (groupToEdit?.groupName || groupName);
+      const isInNewGroup = selectedFieldUuids.includes(field.field_uuid);
+
+      if (isInNewGroup) {
         return {
           ...field,
           ...config,
@@ -116,12 +131,36 @@ const FieldsRegistryPage = () => {
           status: 'Provisioned',
           updated_at: new Date().toISOString()
         };
+      } else if (wasInGroup) {
+        // Remove from group if it was there
+        return {
+          ...field,
+          group_name: '',
+          updated_at: new Date().toISOString()
+        };
       }
       return field;
     });
 
+    // 2. Persist Groups (to support empty groups)
+    const storedGroups = JSON.parse(localStorage.getItem('CDM_GROUPS_REGISTRY') || '[]');
+    const newGroup = { name: groupName, config, updatedAt: new Date().toISOString() };
+    
+    let updatedGroups = [...storedGroups];
+    const groupIdx = updatedGroups.findIndex(g => g.name === (groupToEdit?.groupName || groupName));
+    
+    if (groupIdx !== -1) {
+      updatedGroups[groupIdx] = newGroup;
+    } else {
+      updatedGroups.push(newGroup);
+    }
+
+    localStorage.setItem('CDM_GROUPS_REGISTRY', JSON.stringify(updatedGroups));
     localStorage.setItem('CDM_FIELD_REGISTRY', JSON.stringify(updatedFields));
+    
     setFields(updatedFields);
+    setGroups(updatedGroups);
+    setGroupToEdit(null);
     setView('LIST');
   };
 
@@ -266,13 +305,45 @@ const FieldsRegistryPage = () => {
     );
   }
 
+  if (view === 'GROUPS_LIST') {
+    return (
+      <div className="w-full">
+        <GroupsList
+          fields={fields}
+          groups={groups}
+          onCreateGroup={() => {
+            setGroupToEdit(null);
+            setView('GROUPING');
+          }}
+          onEditGroup={(name) => {
+            const storedGroups = JSON.parse(localStorage.getItem('CDM_GROUPS_REGISTRY') || '[]');
+            const groupConfig = storedGroups.find(g => g.name === name);
+            const memberUuids = fields.filter(f => f.group_name === name).map(f => f.field_uuid);
+            
+            setGroupToEdit({
+              groupName: name,
+              selectedFieldUuids: memberUuids,
+              config: groupConfig?.config
+            });
+            setView('GROUPING');
+          }}
+          onBack={() => setView('LIST')}
+        />
+      </div>
+    );
+  }
+
   if (view === 'GROUPING') {
     return (
       <div className="w-full">
         <GroupingForm 
           fields={fields} 
+          initialData={groupToEdit}
           onApply={handleApplyGroupConfig} 
-          onCancel={() => setView('LIST')} 
+          onCancel={() => {
+            setGroupToEdit(null);
+            setView('GROUPS_LIST');
+          }} 
         />
       </div>
     );
@@ -296,7 +367,7 @@ const FieldsRegistryPage = () => {
               className="bg-transparent border-none outline-none text-sm w-full"
             />
           </div>
-          <Button variant="secondary" icon={<Layers size={18} />} onClick={() => setView('GROUPING')}>
+          <Button variant="secondary" icon={<Layers size={18} />} onClick={() => setView('GROUPS_LIST')}>
             Grouping
           </Button>
           <Button variant="primary" icon={<Plus size={18} />} onClick={() => setView('ADD_FIELDS')}>
@@ -311,17 +382,25 @@ const FieldsRegistryPage = () => {
           data={filteredFields}
           renderRow={renderRow}
           actions={actions}
-          emptyMessage="No fields match your search."
+          emptyState={{
+            searchTerm: searchTerm,
+            title: "No Matching Fields",
+            icon: Search
+          }}
           className={groupPopover.isOpen ? "overflow-visible! pb-80" : ""}
         />
       ) : (
-        <div className={`mt-10 border rounded-xl p-20 flex flex-col items-center justify-center ${isDark ? 'border-white/5 bg-white/2' : 'border-gray-100 bg-gray-50/50'}`}>
-           <div className="w-16 h-16 rounded-full bg-primary-orange/20 flex items-center justify-center mb-6">
-              <Database size={32} className="text-primary-orange" />
-           </div>
-           <h2 className="text-xl font-bold mb-2">No Registered Fields Yet</h2>
-           <p className="text-gray-500 text-sm max-w-sm text-center">Start registering common fields to ensure consistency across all your CDM schemas.</p>
-        </div>
+        <EmptyState 
+          icon={Database}
+          title="No Registered Fields Yet"
+          description='Start registering common fields to ensure consistency across all your CDM schemas.'
+          action={{
+            label: "Add Fields",
+            icon: Plus,
+            onClick: () => setView('ADD_FIELDS')
+          }}
+          className="mt-10 border border-dashed rounded-3xl border-white/5 bg-white/2"
+        />
       )}
 
       <FieldDetailsDrawer 

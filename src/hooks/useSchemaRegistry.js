@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { fieldsToDefinition, definitionToFields } from '../utils/schemaTransformers';
+import { loadDomainConfig } from '../utils/domainConfig';
 
 const STORAGE_KEY = 'schema_registry_schemas';
 
@@ -242,20 +243,36 @@ export const useSchemaRegistry = () => {
   };
 
   const filteredSchemas = useMemo(() => {
+    const config = loadDomainConfig();
+    
     return schemas.filter(s => {
+      // 1. Domain/Subdomain Visibility Filter
+      const domainArray = Array.isArray(s.cdm_domain) ? s.cdm_domain : (s.cdm_domain ? [s.cdm_domain] : []);
+      const subArray    = Array.isArray(s.sub_domain)  ? s.sub_domain  : [];
+
+      if (domainArray.length > 0) {
+        // Find if at least one domain is enabled
+        const enabledDomains = domainArray.filter(d => config[d]?.enabled !== false);
+        
+        if (enabledDomains.length === 0) return false;
+
+        // If it has subdomains, at least one must be enabled within the enabled domains
+        if (subArray.length > 0) {
+          const hasVisibleSub = subArray.some(sub => 
+            enabledDomains.some(d => config[d]?.subdomains?.[sub] !== false)
+          );
+          if (!hasVisibleSub) return false;
+        }
+      }
+
+      // 2. Search Filter
       const term = searchTerm.toLowerCase();
+      if (!term) return true;
+
       const nameMatch = s.cdm_name?.toLowerCase().includes(term);
       const idMatch = s.cdm_id?.toLowerCase().includes(term);
-      
-      // Handle array or string for domain
-      const domainMatch = Array.isArray(s.cdm_domain)
-        ? s.cdm_domain.some(d => d.toLowerCase().includes(term))
-        : s.cdm_domain?.toLowerCase().includes(term);
-
-      // Handle sub_domain array
-      const subDomainMatch = Array.isArray(s.sub_domain)
-        ? s.sub_domain.some(sd => sd.toLowerCase().includes(term))
-        : false;
+      const domainMatch = domainArray.some(d => d.toLowerCase().includes(term));
+      const subDomainMatch = subArray.some(sd => sd.toLowerCase().includes(term));
 
       return nameMatch || idMatch || domainMatch || subDomainMatch;
     });

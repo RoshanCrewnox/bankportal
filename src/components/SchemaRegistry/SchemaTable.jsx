@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
-import { FileJson, MoreVertical, ExternalLink, ArrowUp, ArrowDown } from 'lucide-react';
+import { FileJson, MoreVertical, ExternalLink, ArrowUp, ArrowDown, Database } from 'lucide-react';
+import EmptyState from '../common/EmptyState';
 
 /**
  * Presentational component for Schema Table
@@ -61,8 +62,13 @@ const SchemaTable = ({ schemas, loading, isDark, borderClass, cardBgClass }) => 
 
   if (schemas.length === 0) {
     return (
-      <div className={`rounded-2xl border ${borderClass} ${cardBgClass} p-12 text-center`}>
-        <p className="text-gray-500">No schemas found.</p>
+      <div className={`rounded-2xl border ${borderClass} ${cardBgClass} overflow-hidden`}>
+        <EmptyState 
+          variant="table"
+          icon={Database}
+          title="No schemas found"
+          description="There are currently no schemas associated with this view."
+        />
       </div>
     );
   }

@@ -1,8 +1,10 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect, useMemo } from 'react';
 import { Plus, Database, Eye, Edit3, Trash2, GitBranch, Info } from 'lucide-react';
 import { ThemeContext } from '../../components/common/ThemeContext';
 import SchemaFlowCanvas from '../../components/SchemaRegistry/SchemaFlow/SchemaFlowCanvas';
 import StatusBadge from '../../components/common/StatusBadge';
+import EmptyState from '../../components/common/EmptyState';
+import { loadDomainConfig } from '../../utils/domainConfig';
 
 // ── localStorage helpers ──────────────────────────────────────
 const STORAGE_KEY = 'schema_registry_schemas';
@@ -133,6 +135,27 @@ const SchemaFlowPage = () => {
 
   useEffect(() => { setSchemas(loadSchemas()); }, []);
 
+  const filteredSchemas = useMemo(() => {
+    const config = loadDomainConfig();
+    return schemas.filter(s => {
+      const domainArray = Array.isArray(s.cdm_domain) ? s.cdm_domain : (s.cdm_domain ? [s.cdm_domain] : []);
+      const subArray    = Array.isArray(s.sub_domain)  ? s.sub_domain  : [];
+
+      if (domainArray.length > 0) {
+        const enabledDomains = domainArray.filter(d => config[d]?.enabled !== false);
+        if (enabledDomains.length === 0) return false;
+
+        if (subArray.length > 0) {
+          const hasVisibleSub = subArray.some(sub => 
+            enabledDomains.some(d => config[d]?.subdomains?.[sub] !== false)
+          );
+          if (!hasVisibleSub) return false;
+        }
+      }
+      return true;
+    });
+  }, [schemas]);
+
   // ── handlers ──
   const handleCreateNew = () => setShowModal(true);
 
@@ -205,20 +228,21 @@ const SchemaFlowPage = () => {
 
       {/* Empty state */}
       {schemas.length === 0 ? (
-        <div className={`mt-10 border rounded-2xl p-20 flex flex-col items-center justify-center
-          ${isDark ? 'border-white/5 bg-white/2' : 'border-gray-100 bg-gray-50/50'}`}>
-          <div className="w-16 h-16 rounded-full bg-primary-orange/20 flex items-center justify-center mb-6">
-            <GitBranch className="w-8 h-8 text-primary-orange" />
-          </div>
-          <h2 className="text-xl font-bold mb-2">No schemas yet</h2>
-          <p className={`text-sm text-center max-w-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-            Click "Add schema" to start designing your first schema visually as a node graph.
-          </p>
-        </div>
+        <EmptyState 
+          icon={GitBranch}
+          title="No schemas yet"
+          description='Click "Add schema" to start designing your first schema visually as a node graph.'
+          action={{
+            label: "Add schema",
+            icon: Plus,
+            onClick: handleCreateNew
+          }}
+          className="mt-10 border border-dashed rounded-3xl border-white/5 bg-white/2"
+        />
       ) : (
         // Schema card grid
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-          {schemas.map(schema => (
+          {filteredSchemas.map(schema => (
             <div
               key={schema.cdm_uuid}
               className={`group p-5 rounded-xl border transition-all duration-200 hover:shadow-lg
@@ -270,13 +294,15 @@ const SchemaFlowPage = () => {
                 {schema.desc || '—'}
               </p>
 
-              {/* Domain chip */}
+              {/* Domain chips */}
               {schema.cdm_domain && (
-                <div className="mb-3">
-                  <span className={`text-[10px] px-2 py-0.5 rounded-full border font-medium
-                    ${isDark ? 'text-gray-400 border-white/10 bg-white/3' : 'text-gray-500 border-gray-200 bg-gray-50'}`}>
-                    {schema.cdm_domain}
-                  </span>
+                <div className="flex flex-wrap gap-1.5 mb-3">
+                  {(Array.isArray(schema.cdm_domain) ? schema.cdm_domain : [schema.cdm_domain]).map((d, i) => (
+                    <span key={i} className={`text-[10px] px-2 py-0.5 rounded-full border font-medium
+                      ${isDark ? 'text-gray-400 border-white/10 bg-white/3' : 'text-gray-500 border-gray-200 bg-gray-50'}`}>
+                      {d}
+                    </span>
+                  ))}
                 </div>
               )}
 

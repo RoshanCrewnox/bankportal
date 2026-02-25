@@ -1,9 +1,15 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 
 export const useAddFields = (onSave) => {
   const [schemas, setSchemas] = useState([]);
   const [registeredFields, setRegisteredFields] = useState([]);
+  const [existingGroups, setExistingGroups] = useState([]);
   const [selectedItems, setSelectedItems] = useState([{ id: crypto.randomUUID(), cdm_uuid: '', field_names: [], fieldsList: [] }]);
+  
+  // New state for grouping enhancements
+  const [fieldGroupOverrides, setFieldGroupOverrides] = useState({}); // { 'cdmUuid-fieldName': groupName }
+  const [bulkGroup, setBulkGroup] = useState('');
+  const [applyToAll, setApplyToAll] = useState(false);
 
   useEffect(() => {
     // Load schemas
@@ -16,6 +22,13 @@ export const useAddFields = (onSave) => {
     // Load registered fields to prevent duplicates
     const storedRegistered = JSON.parse(localStorage.getItem('CDM_FIELD_REGISTRY') || '[]');
     setRegisteredFields(storedRegistered);
+
+    // Load existing groups
+    const groups = new Set();
+    storedRegistered.forEach(f => {
+      if (f.group_name) groups.add(f.group_name);
+    });
+    setExistingGroups(Array.from(groups).sort());
   }, []);
 
   const handleAddMore = () => {
@@ -25,6 +38,25 @@ export const useAddFields = (onSave) => {
   const handleRemoveRow = (index) => {
     setSelectedItems(selectedItems.filter((_, i) => i !== index));
   };
+
+  // Remove a specific field from the registration queue
+  const removeSpecificField = useCallback((cdmUuid, fieldName) => {
+    setSelectedItems(prev => prev.map(item => {
+      if (item.cdm_uuid === cdmUuid) {
+        return {
+          ...item,
+          field_names: item.field_names.filter(f => f !== fieldName)
+        };
+      }
+      return item;
+    }));
+  }, []);
+
+  // Update group for an individual field
+  const updateFieldGroup = useCallback((cdmUuid, fieldName, groupName) => {
+    const key = `${cdmUuid}-${fieldName}`;
+    setFieldGroupOverrides(prev => ({ ...prev, [key]: groupName }));
+  }, []);
 
   const handleCdmChange = (index, uuid) => {
     const schema = schemas.find(s => s.cdm_uuid === uuid);
@@ -60,11 +92,15 @@ export const useAddFields = (onSave) => {
       const schema = schemas.find(s => s.cdm_uuid === item.cdm_uuid);
       item.field_names.forEach(fName => {
         const fieldData = schema.parsedFields[fName];
+        const key = `${item.cdm_uuid}-${fName}`;
+        const finalGroup = applyToAll ? bulkGroup : (fieldGroupOverrides[key] || '');
+
         fieldsToRegister.push({
           field_uuid: crypto.randomUUID(),
           cdm_uuid: item.cdm_uuid,
           cdm_name: schema.cdm_name,
           field_name: fName,
+          group_name: finalGroup,
           type: fieldData.type,
           status: 'Required Configuration',
           updatedAt: new Date().toISOString(),
@@ -84,21 +120,36 @@ export const useAddFields = (onSave) => {
       const schema = schemas.find(s => s.cdm_uuid === item.cdm_uuid);
       if (schema) {
         item.field_names.forEach(f => {
-          list.push({ cdm: schema.cdm_name, field: f, type: schema.parsedFields[f]?.type });
+          const key = `${item.cdm_uuid}-${f}`;
+          list.push({ 
+            id: key,
+            cdm_uuid: item.cdm_uuid,
+            cdm: schema.cdm_name, 
+            field: f, 
+            type: schema.parsedFields[f]?.type,
+            group: applyToAll ? bulkGroup : (fieldGroupOverrides[key] || '')
+          });
         });
       }
     });
     return list;
-  }, [selectedItems, schemas]);
+  }, [selectedItems, schemas, fieldGroupOverrides, bulkGroup, applyToAll]);
 
   return {
     schemas,
     selectedItems,
     queuedFields,
+    existingGroups,
+    bulkGroup,
+    setBulkGroup,
+    applyToAll,
+    setApplyToAll,
     handleAddMore,
     handleRemoveRow,
     handleCdmChange,
     toggleFieldSelection,
-    handleFinalSave
+    handleFinalSave,
+    removeSpecificField,
+    updateFieldGroup
   };
 };

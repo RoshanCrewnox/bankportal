@@ -1,16 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Plus, Database, Info } from 'lucide-react';
 import FieldRow from './FieldRow';
 import MultiSelectDropdown from '../FieldsRegistry/MultiSelectDropdown';
-
-const DOMAIN_OPTIONS = [
-  "BFSI", "Telcom", "Utilities", "Retail", "Oil&Gas", "Healthcare", "Lifescience"
-];
-
-const SUBDOMAIN_OPTIONS = [
-  "Investments", "Insurance", "Pensions", "Loans", "Credit cards", 
-  "Wealth management", "BNPL", "Utility bills", "Telco payments", "Crypto"
-];
+import { getEnabledDomains, getAllEnabledSubdomains } from '../../../utils/domainConfig';
 
 const BuilderForm = ({ 
   schema, 
@@ -44,6 +36,10 @@ const BuilderForm = ({
       : [...current, val];
     onUpdate({ ...schema, [name]: updated });
   };
+
+  // Read enabled domains & subdomains from Domain Configuration (localStorage)
+  const enabledDomains    = useMemo(() => getEnabledDomains(),    []);
+  const enabledSubdomains = useMemo(() => getAllEnabledSubdomains(), []);
 
   const sectionClass = `relative p-8 rounded-3xl border transition-all duration-300 ${
     isDark 
@@ -82,7 +78,7 @@ const BuilderForm = ({
           <div className="md:col-span-3">
             <label className={labelClass}>Domain</label>
             <MultiSelectDropdown 
-              options={DOMAIN_OPTIONS} 
+              options={enabledDomains} 
               selected={schema.cdm_domain || []} 
               onToggle={(val) => handleToggle('cdm_domain', val)} 
               isDark={isDark} 
@@ -93,7 +89,7 @@ const BuilderForm = ({
           <div className="md:col-span-3">
             <label className={labelClass}>Sub Domain</label>
             <MultiSelectDropdown 
-              options={SUBDOMAIN_OPTIONS} 
+              options={enabledSubdomains} 
               selected={schema.sub_domain || []} 
               onToggle={(val) => handleToggle('sub_domain', val)} 
               isDark={isDark} 

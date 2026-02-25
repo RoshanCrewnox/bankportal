@@ -1,8 +1,10 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useMemo } from 'react';
 import { Save, AlertCircle, Trash2, Shield, Lock, FileText, Info } from 'lucide-react';
 import Drawer from '../../common/Drawer';
 import Button from '../../common/Button';
 import { ThemeContext } from '../../common/ThemeContext';
+import CustomSelect from '../../OpenBanking/CustomSelect';
+import { MASKING_ALGORITHMS } from '../../../utils/maskingConstants';
 
 const SectionHeader = ({ icon: Icon, title, isDark }) => (
   <div className={`flex items-center gap-2 mb-4 mt-6 first:mt-0 pb-2 border-b ${isDark ? 'border-white/5' : 'border-gray-100'}`}>
@@ -16,16 +18,22 @@ const FieldDetailsDrawer = ({ isOpen, onClose, field, mode = 'view', onUpdate })
   const isDark = theme === 'dark';
   const [formData, setFormData] = useState(() => field ? {
     ...field,
+    masking_algo: field.masking_algo || '',
+    encryption_algo: field.encryption_algo || '',
     is_sensetive: field.is_sensetive ?? false,
-    is_masked: field.is_masked ?? false,
-    is_encrypted: field.is_encrypted ?? false,
     is_required: field.is_required ?? field.required ?? false,
     data_type: field.data_type ?? field.type ?? 'string',
     clasification: field.clasification ?? 'Public',
     status: field.status ?? 'Required Configuration',
     version: field.version ?? '1.0.0'
   } : {});
+  const [activeDropdown, setActiveDropdown] = useState(null); // 'masking' or 'encryption'
   const isEdit = mode === 'edit';
+
+  const maskingOptions = useMemo(() => MASKING_ALGORITHMS.filter(a => a.type === 'Masking' || a.type === 'Hashing'), []);
+  const encryptionOptions = useMemo(() => MASKING_ALGORITHMS.filter(a => a.type === 'Encryption'), []);
+
+  const getAlgoName = (id) => MASKING_ALGORITHMS.find(a => a.id === id)?.name || id;
 
   const handleChange = (key, value) => {
     if (!isEdit) return;
@@ -155,10 +163,11 @@ const FieldDetailsDrawer = ({ isOpen, onClose, field, mode = 'view', onUpdate })
         {/* Security & Data Privacy */}
         <section>
           <SectionHeader icon={Shield} title="Security & Data Privacy" isDark={isDark} />
-          <div className={`grid grid-cols-2 gap-6 p-4 rounded-xl border ${
+          <div className={`p-6 rounded-2xl border space-y-6 ${
             isDark ? 'bg-primary-orange/5 border-primary-orange/10' : 'bg-orange-50/30 border-orange-100'
           }`}>
-            <div className="space-y-4">
+            {/* Checkbox row */}
+            <div className="flex items-center gap-12">
               <label className="flex items-center gap-3 cursor-pointer group">
                 <input 
                   type="checkbox" 
@@ -167,7 +176,7 @@ const FieldDetailsDrawer = ({ isOpen, onClose, field, mode = 'view', onUpdate })
                   disabled={!isEdit}
                   className={`w-4 h-4 rounded text-primary-orange accent-primary-orange ${isDark ? 'border-white/10' : 'border-gray-300'}`}
                 />
-                <span className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Mandatory / Required</span>
+                <span className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Mandatory Field</span>
               </label>
               <label className="flex items-center gap-3 cursor-pointer group">
                 <input 
@@ -180,27 +189,45 @@ const FieldDetailsDrawer = ({ isOpen, onClose, field, mode = 'view', onUpdate })
                 <span className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>PII / Sensitive Data</span>
               </label>
             </div>
-            <div className="space-y-4">
-              <label className="flex items-center gap-3 cursor-pointer group">
-                <input 
-                  type="checkbox" 
-                  checked={formData.is_masked || false} 
-                  onChange={(e) => handleChange('is_masked', e.target.checked)}
-                  disabled={!isEdit}
-                  className={`w-4 h-4 rounded text-primary-orange accent-primary-orange ${isDark ? 'border-white/10' : 'border-gray-300'}`}
-                />
-                <span className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Masked (eg: ****1234)</span>
-              </label>
-              <label className="flex items-center gap-3 cursor-pointer group">
-                <input 
-                  type="checkbox" 
-                  checked={formData.is_encrypted || false} 
-                  onChange={(e) => handleChange('is_encrypted', e.target.checked)}
-                  disabled={!isEdit}
-                  className={`w-4 h-4 rounded text-primary-orange accent-primary-orange ${isDark ? 'border-white/10' : 'border-gray-300'}`}
-                />
-                <span className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Encrypted at Rest</span>
-              </label>
+
+            {/* Dropdown row */}
+            <div className="grid grid-cols-2 gap-4 pt-6 border-t dark:border-white/5 border-gray-100">
+              <div>
+                <label className={labelClass}>Masking Policy</label>
+                {isEdit ? (
+                  <CustomSelect 
+                    value={getAlgoName(formData.masking_algo) || "Not Masked"}
+                    options={["Not Masked", ...maskingOptions.map(a => a.name)]}
+                    onChange={(name) => {
+                      const algo = maskingOptions.find(a => a.name === name);
+                      handleChange('masking_algo', algo ? algo.id : '');
+                    }}
+                    isOpen={activeDropdown === 'masking'}
+                    onToggle={() => setActiveDropdown(activeDropdown === 'masking' ? null : 'masking')}
+                    isDark={isDark}
+                  />
+                ) : (
+                  <div className={inputClass}>{getAlgoName(formData.masking_algo) || "None"}</div>
+                )}
+              </div>
+              <div>
+                <label className={labelClass}>Encryption Policy</label>
+                {isEdit ? (
+                  <CustomSelect 
+                    value={getAlgoName(formData.encryption_algo) || "Not Encrypted"}
+                    options={["Not Encrypted", ...encryptionOptions.map(a => a.name)]}
+                    onChange={(name) => {
+                      const algo = encryptionOptions.find(a => a.name === name);
+                      handleChange('encryption_algo', algo ? algo.id : '');
+                    }}
+                    isOpen={activeDropdown === 'encryption'}
+                    onToggle={() => setActiveDropdown(activeDropdown === 'encryption' ? null : 'encryption')}
+                    isDark={isDark}
+                  />
+                ) : (
+                  <div className={inputClass}>{getAlgoName(formData.encryption_algo) || "None"}</div>
+                )}
+              </div>
             </div>
           </div>
 

@@ -4,10 +4,10 @@ import { ThemeContext } from '../common/ThemeContext';
 import CustomSelect from '../OpenBanking/CustomSelect';
 
 const ACCESS_LEVELS = [
-  { value: 'READ', label: 'Read Only', icon: Activity, color: 'text-green-500', bg: 'bg-green-500/10' },
-  { value: 'MASKED', label: 'Masked', icon: EyeOff, color: 'text-orange-500', bg: 'bg-orange-500/10' },
-  { value: 'ENCRYPTED', label: 'Encrypted', icon: Lock, color: 'text-blue-500', bg: 'bg-blue-500/10' },
-  { value: 'BLOCKED', label: 'Blocked', icon: ShieldAlert, color: 'text-red-500', bg: 'bg-red-500/10' }
+  { value: 'READ', label: 'READ', icon: Activity, color: 'text-green-500', bg: 'bg-green-500/10' },
+  { value: 'MASKED', label: 'MASKED', icon: EyeOff, color: 'text-orange-500', bg: 'bg-orange-500/10' },
+  { value: 'ENCRYPTED', label: 'ENCRYPTED', icon: Lock, color: 'text-blue-500', bg: 'bg-blue-500/10' },
+  { value: 'BLOCKED', label: 'BLOCKED', icon: ShieldAlert, color: 'text-red-500', bg: 'bg-red-500/10' }
 ];
 
 const ProvisioningFieldsDrawer = ({ tpp, onClose }) => {
@@ -43,6 +43,16 @@ const ProvisioningFieldsDrawer = ({ tpp, onClose }) => {
       return matchSearch && matchGroup;
     });
   }, [allFields, searchTerm, selectedGroup]);
+
+  const groupedFields = useMemo(() => {
+    const groups = {};
+    filteredFields.forEach(field => {
+      const cdm = field.cdm_name || 'Manual Entry';
+      if (!groups[cdm]) groups[cdm] = [];
+      groups[cdm].push(field);
+    });
+    return groups;
+  }, [filteredFields]);
 
   const handleToggleField = (field) => {
     const exists = provisionedFields.find(p => p.field_uuid === field.field_uuid);
@@ -142,79 +152,103 @@ const ProvisioningFieldsDrawer = ({ tpp, onClose }) => {
       </div>
 
       {/* Premium Field Cards List */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-3 pb-32">
-        {filteredFields.length > 0 ? (
-          filteredFields.map((field) => {
-            const config = provisionedFields.find(p => p.field_uuid === field.field_uuid);
-            const isEnabled = !!config;
-            const currentAccess = ACCESS_LEVELS.find(l => l.value === config?.access_level) || ACCESS_LEVELS[0];
+      <div className="flex-1 overflow-y-auto p-6 space-y-8 pb-32">
+        {Object.keys(groupedFields).length > 0 ? (
+          Object.entries(groupedFields).map(([cdmName, fields]) => (
+            <div key={cdmName} className="space-y-4">
+              <div className="flex items-center gap-3 px-1">
+                <span className="text-[11px] font-black text-primary-orange uppercase tracking-[0.15em] whitespace-nowrap">
+                  {cdmName}
+                </span>
+                <div className={`h-px flex-1 ${isDark ? 'bg-white/5' : 'bg-gray-100'}`} />
+              </div>
+              
+              <div className="space-y-2.5">
+                {fields.map((field) => {
+                  const config = provisionedFields.find(p => p.field_uuid === field.field_uuid);
+                  const isEnabled = !!config;
+                  const currentAccess = ACCESS_LEVELS.find(l => l.value === config?.access_level) || ACCESS_LEVELS[0];
 
-            return (
-              <div 
-                key={field.field_uuid} 
-                className={`group relative p-4 rounded-2xl border transition-all duration-300 flex items-center justify-between gap-6 ${
-                  isEnabled 
-                    ? 'bg-primary-orange/3 border-primary-orange/20 shadow-lg shadow-primary-orange/5' 
-                    : 'bg-white dark:bg-[#25293c] border-gray-100 dark:border-white/5 hover:border-gray-200 dark:hover:border-white/10'
-                }`}
-              >
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-bold text-gray-900 dark:text-white truncate">{field.field_name}</span>
-                    {isEnabled && <div className="p-0.5 rounded-full bg-green-500 ring-4 ring-green-500/10"><Check size={8} className="text-white" /></div>}
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span className="text-[10px] py-0.5 px-2 rounded bg-gray-100 dark:bg-white/5 text-gray-500 dark:text-gray-400 font-bold uppercase tracking-widest">
-                      {field.group_name || 'Uncategorized'}
-                    </span>
-                    <span className="text-[10px] text-gray-400 font-medium truncate flex items-center gap-1">
-                      <Info size={10} />
-                      {field.type} • {field.cdm_name || 'Manual'}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-8">
-                  {/* Access Level Controls */}
-                  {isEnabled && (
-                    <div className="flex items-center gap-3 animate-in fade-in slide-in-from-right-4 duration-300">
-                      <div className={`p-2 rounded-xl ${currentAccess.bg} ${currentAccess.color} shadow-sm`}>
-                        <currentAccess.icon size={18} />
-                      </div>
-                      <div className="w-44">
-                        <CustomSelect 
-                          value={currentAccess.label}
-                          options={ACCESS_LEVELS.map(l => l.label)}
-                          isOpen={openDropdownId === field.field_uuid}
-                          onToggle={() => setOpenDropdownId(openDropdownId === field.field_uuid ? null : field.field_uuid)}
-                          onChange={(label) => {
-                            const found = ACCESS_LEVELS.find(l => l.label === label);
-                            handleAccessChange(field.field_uuid, found.value);
-                          }}
-                          isDark={isDark}
-                        />
-                      </div>
-                    </div>
-                  )}
-
-                  {/* High-End Toggle */}
-                  <div className="flex flex-col items-center gap-1.5">
-                    <button 
-                      onClick={() => handleToggleField(field)}
-                      className={`relative w-12 h-6 rounded-full transition-all duration-300 ring-2 ring-inset ${
-                        isEnabled ? 'bg-primary-orange ring-primary-orange/50 shadow-inner' : 'bg-gray-200 dark:bg-white/5 ring-gray-100 dark:ring-white/5'
+                  return (
+                    <div 
+                      key={field.field_uuid} 
+                      className={`group relative rounded-xl border transition-all duration-300 flex items-center justify-between gap-6 ${
+                        isEnabled 
+                          ? 'bg-primary-orange/4 border-primary-orange/20 shadow-lg shadow-primary-orange/5' 
+                          : 'bg-white dark:bg-[#25293c] border-gray-100 dark:border-white/5 hover:border-gray-200 dark:hover:border-white/10'
                       }`}
                     >
-                      <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-lg transition-all duration-300 ${isEnabled ? 'left-7' : 'left-1'}`} />
-                    </button>
-                    <span className={`text-[8px] font-bold tracking-widest uppercase ${isEnabled ? 'text-primary-orange' : 'text-gray-400'}`}>
-                      {isEnabled ? 'Enabled' : 'Disabled'}
-                    </span>
-                  </div>
-                </div>
+                      {/* Vertical Accent Line */}
+                      <div className={`absolute left-0 top-0 bottom-0 w-1 rounded-l-xl ${
+                        isEnabled ? 'bg-primary-orange' : 'bg-gray-200 dark:bg-white/10'
+                      }`} />
+
+                      <div className="flex-1 min-w-0 py-3.5 pl-6 pr-4">
+                        <div className="flex items-center gap-4">
+                          {/* Group Badge (replaces the older NEW GROUP badge) */}
+                          <div className={`shrink-0 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider border ${
+                            isEnabled 
+                              ? 'bg-primary-orange/10 border-primary-orange/20 text-primary-orange'
+                              : 'bg-gray-100 dark:bg-white/5 border-transparent text-gray-400 dark:text-gray-500'
+                          }`}>
+                            {field.group_name || 'Uncategorized'}
+                          </div>
+
+                          <div className="flex items-baseline gap-2.5 min-w-0">
+                            <span className="text-[11px] text-gray-400 dark:text-gray-500 font-bold uppercase tracking-wider shrink-0">
+                              Field:
+                            </span>
+                            <span className={`text-[15px] font-bold tracking-tight truncate ${
+                              isEnabled 
+                                ? (isDark ? 'text-white' : 'text-gray-900') 
+                                : (isDark ? 'text-gray-400' : 'text-gray-500')
+                            }`}>
+                              {field.field_name}
+                            </span>
+                            <span className={`text-[10px] font-semibold italic shrink-0 ${
+                              isEnabled ? 'text-primary-orange/70' : 'text-gray-400/70'
+                            }`}>
+                              {field.type}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-6 pr-6">
+                        {isEnabled && (
+                          <div className="flex items-center gap-3 animate-in fade-in slide-in-from-right-2 duration-300">
+                            <div className={`p-1.5 rounded-lg ${currentAccess.bg} ${currentAccess.color} shadow-sm border ${isDark ? 'border-white/5' : 'border-gray-50'}`}>
+                              <currentAccess.icon size={14} />
+                            </div>
+                            <div className="w-36">
+                              <CustomSelect 
+                                value={currentAccess.value}
+                                options={ACCESS_LEVELS}
+                                isOpen={openDropdownId === field.field_uuid}
+                                onToggle={() => setOpenDropdownId(openDropdownId === field.field_uuid ? null : field.field_uuid)}
+                                onChange={(val) => handleAccessChange(field.field_uuid, val)}
+                              />
+                            </div>
+                          </div>
+                        )}
+
+                        <div className="flex flex-col items-center">
+                          <button 
+                            onClick={() => handleToggleField(field)}
+                            className={`relative w-10 h-5 rounded-full transition-all duration-300 ring-2 ring-inset ${
+                              isEnabled ? 'bg-primary-orange ring-primary-orange/30 shadow-inner' : 'bg-gray-200 dark:bg-white/5 ring-gray-100 dark:ring-white/5'
+                            }`}
+                          >
+                            <div className={`absolute top-0.5 w-3.5 h-3.5 rounded-full bg-white shadow-lg transition-all duration-300 ${isEnabled ? 'left-5.5' : 'left-1'}`} />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-            );
-          })
+            </div>
+          ))
         ) : (
           <div className="flex flex-col items-center justify-center py-20 text-center space-y-4 opacity-60">
             <div className="p-4 rounded-full bg-gray-100 dark:bg-white/5">

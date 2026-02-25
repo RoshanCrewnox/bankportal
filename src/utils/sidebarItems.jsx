@@ -1,5 +1,5 @@
 import React from 'react';
-import { Building2, LayoutDashboard, Settings2, ShieldCheck, FileJson, Coins, Rocket, Settings } from "lucide-react";
+import { Building2, LayoutDashboard, Settings2, ShieldCheck, FileJson, Coins, Rocket, Settings, ArrowRightLeft } from "lucide-react";
 
 /**
  * Sidebar navigation configuration
@@ -76,8 +76,14 @@ export const sidebarItems = [
     ],
   },
   {
+    id: "sr-mapper",
+    name: "JSON Mapper",
+    icon: <ArrowRightLeft className="w-5 h-5" />,
+    pathname: "/schema-registry/mapper",
+  },
+  {
     id: "asset-launchpad",
-    name: "Asset Launch Pad",
+    name: "Asset Launchpad",
     icon: <Rocket className="w-5 h-5" />,
     pathname: "/asset-launchpad",
   },

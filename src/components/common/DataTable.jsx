@@ -2,6 +2,7 @@ import React, { useContext, useState, useMemo } from 'react';
 import { ThemeContext } from './ThemeContext';
 import { ArrowUp, ArrowDown } from 'lucide-react';
 import Pagination from './Pagination';
+import EmptyState from './EmptyState';
 
 const EMPTY_HEADERS = [];
 const EMPTY_DATA = [];
@@ -13,6 +14,7 @@ const DataTable = ({
   renderRow, 
   actions = EMPTY_ACTIONS,
   emptyMessage = "No records found",
+  emptyState = null, // { icon, title, description, action }
   pagination = null, // { currentPage, totalItems, onPageChange, itemsPerPage }
   className = "",
   tableClassName = ""
@@ -112,8 +114,14 @@ const DataTable = ({
           
           {sortedData.length === 0 && (
             <tr>
-              <td colSpan={headers.length} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400 italic text-sm">
-                {emptyMessage}
+              <td colSpan={headers.length} className="px-6 py-6 transition-all duration-300">
+                <EmptyState 
+                  variant="table"
+                  title={emptyState?.title || emptyMessage}
+                  description={emptyState?.description}
+                  icon={emptyState?.icon}
+                  action={emptyState?.action}
+                />
               </td>
             </tr>
           )}

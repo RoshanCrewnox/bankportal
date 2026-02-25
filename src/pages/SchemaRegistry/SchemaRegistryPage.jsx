@@ -5,6 +5,7 @@ import { useSchemaRegistry } from '../../hooks/useSchemaRegistry';
 import BuilderContainer from '../../components/SchemaRegistry/SchemaBuilder/BuilderContainer';
 import Button from '../../components/common/Button';
 import StatusBadge from '../../components/common/StatusBadge';
+import EmptyState from '../../components/common/EmptyState';
 
 const SchemaRegistryPage = () => {
   const { theme } = useContext(ThemeContext);
@@ -79,14 +80,17 @@ const SchemaRegistryPage = () => {
 
       {/* Content */}
       {schemas.length === 0 ? (
-        /* Empty State */
-        <div className={`mt-10 border rounded-xl p-20 flex flex-col items-center justify-center ${isDark ? 'border-white/5 bg-white/2' : 'border-gray-100 bg-gray-50/50'}`}>
-           <div className="w-16 h-16 rounded-full bg-primary-orange/20 flex items-center justify-center mb-6">
-              <Database size={32} className="text-primary-orange" />
-           </div>
-           <h2 className="text-xl font-bold mb-2">Ready to Architect?</h2>
-           <p className="text-gray-500 text-sm max-w-sm text-center">Click "Onboard Schema" to begin building your Common Data Model with high-fidelity visual context.</p>
-        </div>
+        <EmptyState 
+          icon={Database}
+          title="Ready to Architect?"
+          description='Click "Onboard Schema" to begin building your Common Data Model with high-fidelity visual context.'
+          action={{
+            label: "Onboard Schema",
+            icon: Plus,
+            onClick: handleCreateNew
+          }}
+          className="mt-10 border border-dashed rounded-3xl border-white/5 bg-white/2"
+        />
       ) : (
         /* Schema Cards Grid */
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
@@ -127,9 +131,22 @@ const SchemaRegistryPage = () => {
                 </div>
 
                 {/* Row 2: Description */}
-                <p className={`text-xs mb-4 line-clamp-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                <p className={`text-xs mb-3 line-clamp-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                   {schema.desc || 'No description'}
                 </p>
+
+                {/* Domain chips */}
+                {schema.cdm_domain && (
+                  <div className="flex flex-wrap gap-1.5 mb-4">
+                    {(Array.isArray(schema.cdm_domain) ? schema.cdm_domain : [schema.cdm_domain]).map((d, i) => (
+                      <span key={i} className={`text-[10px] px-2 py-0.5 rounded-full border font-medium ${
+                        isDark ? 'text-gray-400 border-white/10 bg-white/3' : 'text-gray-500 border-gray-200 bg-gray-50'
+                      }`}>
+                        {d}
+                      </span>
+                    ))}
+                  </div>
+                )}
 
                 {/* Row 3: Last Modified | Status Badge */}
                 <div className="flex items-end justify-between">
