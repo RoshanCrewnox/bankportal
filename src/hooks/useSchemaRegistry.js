@@ -234,12 +234,10 @@ export const useSchemaRegistry = () => {
   };
 
   const handleDelete = (uuid) => {
-    if (window.confirm('Are you sure you want to delete this schema?')) {
-      const current = loadSchemas();
-      const updated = current.filter(s => s.cdm_uuid !== uuid);
-      saveSchemas(updated);
-      setSchemas(updated);
-    }
+    const current = loadSchemas();
+    const updated = current.filter(s => s.cdm_uuid !== uuid);
+    saveSchemas(updated);
+    setSchemas(updated);
   };
 
   const filteredSchemas = useMemo(() => {

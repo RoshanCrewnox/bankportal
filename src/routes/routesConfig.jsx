@@ -10,7 +10,7 @@ import ConsentCenter from '../pages/OpenBanking/ConsentCenter';
 import SchemaRegistryPage from '../pages/SchemaRegistry/SchemaRegistryPage';
 import FieldsRegistryPage from '../pages/SchemaRegistry/FieldsRegistryPage';
 import SchemaFlowPage from '../pages/SchemaRegistry/SchemaFlowPage';
-import JSONMapperPage from '../pages/SchemaRegistry/JSONMapperPage';
+import JSONMapperPage from '../pages/JSONMapper/JSONMapperPage';
 import AssetLaunchPad from '../pages/AssetLaunchPad/AssetLaunchPad';
 import Configuration from '../pages/Configuration/Configuration';
 

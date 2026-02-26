@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { ThemeContext } from '../../components/common/ThemeContext';
-import { Settings, Shield, Globe, ChevronRight } from 'lucide-react';
+import { Settings, Shield, Globe, ChevronRight, ArrowLeft } from 'lucide-react';
 import DataMasking from './components/DataMasking';
 import DomainConfiguration from './components/DomainConfiguration';
 
@@ -49,20 +49,23 @@ const Configuration = () => {
   if (activePage === 'masking') {
     return (
       <div className="min-h-screen">
-        <div className="flex items-center gap-3 mb-8">
-          <div className={`p-2 rounded-lg ${isDark ? 'bg-orange-500/10 text-orange-500' : 'bg-orange-100 text-orange-600'}`}>
-            <Shield size={28} />
-          </div>
+        <div className="flex items-center gap-4 mb-8">
+          <button 
+            onClick={() => setActivePage(null)}
+            className={`p-2 rounded-lg transition-colors ${
+              isDark ? 'hover:bg-white/5 text-gray-400' : 'hover:bg-gray-100 text-gray-500'
+            }`}
+          >
+            <ArrowLeft size={20} />
+          </button>
           <div>
-            <h1 className={`text-3xl font-extrabold tracking-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>
-              Masking & Encryption Configuration
-            </h1>
+            <h1 className="text-2xl font-bold">Masking & Encryption Configuration</h1>
             <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
               Configure field-level masking algorithms and encryption policies
             </p>
           </div>
         </div>
-        <div className="pt-2 mt-5">
+        <div className="pt-2">
           <DataMasking onBack={() => setActivePage(null)} />
         </div>
       </div>
@@ -73,20 +76,23 @@ const Configuration = () => {
   if (activePage === 'domain') {
     return (
       <div className="min-h-screen">
-        <div className="flex items-center gap-3 mb-8">
-          <div className={`p-2 rounded-lg ${isDark ? 'bg-blue-500/10 text-blue-500' : 'bg-blue-100 text-blue-600'}`}>
-            <Globe size={28} />
-          </div>
+        <div className="flex items-center gap-4 mb-8">
+          <button 
+            onClick={() => setActivePage(null)}
+            className={`p-2 rounded-lg transition-colors ${
+              isDark ? 'hover:bg-white/5 text-gray-400' : 'hover:bg-gray-100 text-gray-500'
+            }`}
+          >
+            <ArrowLeft size={20} />
+          </button>
           <div>
-            <h1 className={`text-3xl font-extrabold tracking-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>
-              Domain Configuration
-            </h1>
+            <h1 className="text-2xl font-bold">Domain Configuration</h1>
             <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
               Domain-level settings, routing rules and environment bindings
             </p>
           </div>
         </div>
-        <div className="pt-2 mt-5">
+        <div className="pt-2">
           <DomainConfiguration onBack={() => setActivePage(null)} />
         </div>
       </div>
@@ -97,22 +103,15 @@ const Configuration = () => {
   return (
     <div className="min-h-screen">
       {/* Page header */}
-      <div className="flex items-center gap-3 mb-8">
-        <div className={`p-2 rounded-lg ${isDark ? 'bg-orange-500/10 text-orange-500' : 'bg-orange-100 text-orange-600'}`}>
-          <Settings size={28} />
-        </div>
-        <div>
-          <h1 className={`text-3xl font-extrabold tracking-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>
-            System Configuration
-          </h1>
-          <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-            Manage global settings, security policies, and data protection rules
-          </p>
-        </div>
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold">System Configuration</h1>
+        <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+          Manage global settings, security policies, and data protection rules
+        </p>
       </div>
 
       {/* Two-card grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2 mt-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
         {CONFIG_CARDS.map(({ id, icon: Icon, title, description, accent }) => {
           const a = ACCENT[accent];
           return (

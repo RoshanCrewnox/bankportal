@@ -2,12 +2,14 @@ import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import auth from "../../../services/auth";
+import NewAlertBox from "../../common/NewAlertBox";
 
 export default function TwoFactorAuth() {
   const [otp, setOtp] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
   const [timeLeft, setTimeLeft] = useState(60);
+  const [showResendSuccess, setShowResendSuccess] = useState(false);
   const isResendDisabled = timeLeft > 0;
 
   const handleOtpChange = (e, index) => {
@@ -72,7 +74,7 @@ export default function TwoFactorAuth() {
 
   const handleResendOTP = () => {
     if (timeLeft === 0) {
-      alert("New OTP sent successfully!");
+      setShowResendSuccess(true);
       setTimeLeft(60);
     }
   };
@@ -146,6 +148,16 @@ export default function TwoFactorAuth() {
           </div>
         </form>
       </div>
+
+      <NewAlertBox 
+        showAlert={showResendSuccess}
+        title="OTP Resent"
+        message="A new OTP has been sent successfully to your registered device."
+        onConfirm={() => setShowResendSuccess(false)}
+        type="success"
+        confirmText="OK"
+        showCancelButton={false}
+      />
     </div>
   );
 }

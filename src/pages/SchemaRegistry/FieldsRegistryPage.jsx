@@ -235,7 +235,7 @@ const FieldsRegistryPage = () => {
           {isThisGroupOpen && (
             <div 
               ref={popoverRef}
-              className="absolute top-12 right-0 w-80 bg-white dark:bg-secondary-dark-bg border border-gray-200 dark:border-white/10 rounded-2xl shadow-2xl p-6 space-y-6 z-100 animate-in fade-in zoom-in duration-200 text-left not-italic"
+              className="absolute top-12 right-0 w-80 bg-white dark:bg-secondary-dark-bg border border-gray-200 dark:border-white/5 rounded-2xl shadow-2xl p-6 space-y-6 z-100 animate-in fade-in zoom-in duration-200 text-left not-italic"
             >
               <div className="flex items-center justify-between mb-2">
                 <span className="text-[10px] font-bold text-primary-orange uppercase tracking-widest">Assign to Group</span>
@@ -357,7 +357,7 @@ const FieldsRegistryPage = () => {
           <p className="text-gray-500 dark:text-gray-400 text-sm">Manage reusable data fields across your schema ecosystem.</p>
         </div>
         <div className="flex items-center gap-3">
-          <div className={`flex items-center gap-2 px-3 py-2 rounded-lg border min-w-[280px] ${isDark ? 'bg-white/5 border-white/10' : 'bg-gray-50 border-gray-200 shadow-sm'}`}>
+          <div className={`flex items-center gap-2 px-3 py-2 rounded-lg border min-w-[280px] ${isDark ? 'bg-white/5 border-white/5' : 'bg-gray-50 border-gray-200 shadow-sm'}`}>
             <Search size={16} className="text-gray-400" />
             <input 
               type="text" 

@@ -6,6 +6,8 @@ import BuilderContainer from '../../components/SchemaRegistry/SchemaBuilder/Buil
 import Button from '../../components/common/Button';
 import StatusBadge from '../../components/common/StatusBadge';
 import EmptyState from '../../components/common/EmptyState';
+import NewAlertBox from '../../components/common/NewAlertBox';
+import { useState } from 'react';
 
 const SchemaRegistryPage = () => {
   const { theme } = useContext(ThemeContext);
@@ -29,7 +31,16 @@ const SchemaRegistryPage = () => {
     isEditing
   } = useSchemaRegistry();
 
+  const [schemaToDeleteUuid, setSchemaToDeleteUuid] = useState(null);
+
   const isDark = theme === 'dark';
+
+  const handleConfirmDelete = () => {
+    if (schemaToDeleteUuid) {
+      handleDelete(schemaToDeleteUuid);
+      setSchemaToDeleteUuid(null);
+    }
+  };
 
   if (view === 'BUILDER') {
     return (
@@ -100,7 +111,7 @@ const SchemaRegistryPage = () => {
                 key={schema.cdm_uuid}
                 className={`group p-5 rounded-xl border transition-all duration-200 hover:shadow-lg ${
                   isDark 
-                    ? 'bg-secondary-dark-bg border-white/10 hover:border-white/15' 
+                    ? 'bg-secondary-dark-bg border-white/5 hover:border-white/5' 
                     : 'bg-white border-gray-200 hover:border-gray-300 shadow-sm'
                 }`}
               >
@@ -127,6 +138,13 @@ const SchemaRegistryPage = () => {
                     >
                       <Edit3 size={15} />
                     </button>
+                    <button
+                      onClick={() => setSchemaToDeleteUuid(schema.cdm_uuid)}
+                      className={`p-1.5 rounded-md transition-colors ${isDark ? 'text-gray-500 hover:text-red-400 hover:bg-red-500/5' : 'text-gray-400 hover:text-red-500 hover:bg-red-50'}`}
+                      title="Delete"
+                    >
+                      <Trash2 size={15} />
+                    </button>
                   </div>
                 </div>
 
@@ -140,7 +158,7 @@ const SchemaRegistryPage = () => {
                   <div className="flex flex-wrap gap-1.5 mb-4">
                     {(Array.isArray(schema.cdm_domain) ? schema.cdm_domain : [schema.cdm_domain]).map((d, i) => (
                       <span key={i} className={`text-[10px] px-2 py-0.5 rounded-full border font-medium ${
-                        isDark ? 'text-gray-400 border-white/10 bg-white/3' : 'text-gray-500 border-gray-200 bg-gray-50'
+                        isDark ? 'text-gray-400 border-white/5 bg-white/3' : 'text-gray-500 border-gray-200 bg-gray-50'
                       }`}>
                         {d}
                       </span>
@@ -161,6 +179,17 @@ const SchemaRegistryPage = () => {
           })}
         </div>
       )}
+
+      {/* Delete Confirmation Alert */}
+      <NewAlertBox 
+        showAlert={!!schemaToDeleteUuid}
+        title="Delete Schema"
+        message="Are you sure you want to delete this schema? This action cannot be undone."
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setSchemaToDeleteUuid(null)}
+        type="error"
+        confirmText="Delete"
+      />
     </div>
   );
 };

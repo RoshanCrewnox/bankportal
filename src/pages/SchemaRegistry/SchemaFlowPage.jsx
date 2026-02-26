@@ -4,6 +4,7 @@ import { ThemeContext } from '../../components/common/ThemeContext';
 import SchemaFlowCanvas from '../../components/SchemaRegistry/SchemaFlow/SchemaFlowCanvas';
 import StatusBadge from '../../components/common/StatusBadge';
 import EmptyState from '../../components/common/EmptyState';
+import NewAlertBox from '../../components/common/NewAlertBox';
 import { loadDomainConfig } from '../../utils/domainConfig';
 
 // ── localStorage helpers ──────────────────────────────────────
@@ -40,7 +41,7 @@ const NewSchemaModal = ({ isDark, onConfirm, onClose }) => {
 
   const inputCls = `w-full px-3 py-2 text-sm rounded-lg border outline-none transition
     focus:ring-2 focus:ring-primary-orange/40 focus:border-primary-orange
-    ${isDark ? 'bg-darkbg border-white/10 text-white placeholder:text-gray-600' : 'bg-gray-50 border-gray-200 text-gray-800 placeholder:text-gray-400'}`;
+    ${isDark ? 'bg-darkbg border-white/5 text-white placeholder:text-gray-600' : 'bg-gray-50 border-gray-200 text-gray-800 placeholder:text-gray-400'}`;
 
   const labelCls = `block text-xs font-semibold mb-1.5 ${isDark ? 'text-gray-400' : 'text-gray-500'}`;
 
@@ -48,10 +49,10 @@ const NewSchemaModal = ({ isDark, onConfirm, onClose }) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
       <div className={`relative w-full max-w-lg mx-4 rounded-2xl shadow-2xl animate-in zoom-in-95 duration-200
-        ${isDark ? 'bg-secondary-dark-bg border border-white/10' : 'bg-white border border-gray-200'}`}
+        ${isDark ? 'bg-secondary-dark-bg border border-white/5' : 'bg-white border border-gray-200'}`}
       >
         {/* Header */}
-        <div className={`flex items-center gap-3 px-6 py-5 border-b ${isDark ? 'border-white/10' : 'border-gray-100'}`}>
+        <div className={`flex items-center gap-3 px-6 py-5 border-b ${isDark ? 'border-white/5' : 'border-gray-200'}`}>
           <div className="p-2 rounded-xl bg-primary-orange/15 text-primary-orange">
             <GitBranch className="w-5 h-5" />
           </div>
@@ -64,7 +65,7 @@ const NewSchemaModal = ({ isDark, onConfirm, onClose }) => {
         {/* Schema info — same fields as BuilderForm */}
         <div className="px-6 py-5 space-y-4">
           {/* Schema Information section */}
-          <div className={`rounded-xl border p-4 ${isDark ? 'border-white/10 bg-white/3' : 'border-gray-100 bg-gray-50/70'}`}>
+          <div className={`rounded-xl border p-4 ${isDark ? 'border-white/5 bg-white/3' : 'border-gray-200 bg-gray-50/70'}`}>
             <div className="flex items-center gap-2 mb-4">
               <Info className="w-3.5 h-3.5 text-primary-orange" />
               <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Schema information</span>
@@ -104,10 +105,10 @@ const NewSchemaModal = ({ isDark, onConfirm, onClose }) => {
         </div>
 
         {/* Footer */}
-        <div className={`flex gap-3 px-6 py-4 border-t ${isDark ? 'border-white/10' : 'border-gray-100'}`}>
+        <div className={`flex gap-3 px-6 py-4 border-t ${isDark ? 'border-white/5' : 'border-gray-200'}`}>
           <button onClick={onClose}
             className={`flex-1 py-2.5 rounded-lg text-sm font-semibold border transition-colors
-              ${isDark ? 'border-white/10 text-gray-300 hover:bg-white/5' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
+              ${isDark ? 'border-white/5 text-gray-300 hover:bg-white/5' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
             Cancel
           </button>
           <button
@@ -132,6 +133,7 @@ const SchemaFlowPage = () => {
   const [schemas,       setSchemas]       = useState([]);
   const [currentSchema, setCurrentSchema] = useState(null);
   const [showModal,     setShowModal]     = useState(false);
+  const [schemaToDeleteUuid, setSchemaToDeleteUuid] = useState(null);
 
   useEffect(() => { setSchemas(loadSchemas()); }, []);
 
@@ -168,11 +170,15 @@ const SchemaFlowPage = () => {
 
   const handleEdit = (schema) => { setCurrentSchema(schema); setView('CANVAS'); };
 
-  const handleDelete = (uuid) => {
-    if (!window.confirm('Delete this schema?')) return;
-    const updated = schemas.filter(s => s.cdm_uuid !== uuid);
-    saveSchemas(updated);
-    setSchemas(updated);
+  const handleDelete = (uuid) => setSchemaToDeleteUuid(uuid);
+
+  const handleConfirmDelete = () => {
+    if (schemaToDeleteUuid) {
+      const updated = schemas.filter(s => s.cdm_uuid !== schemaToDeleteUuid);
+      saveSchemas(updated);
+      setSchemas(updated);
+      setSchemaToDeleteUuid(null);
+    }
   };
 
   const handleSave = (schemaData) => {
@@ -247,7 +253,7 @@ const SchemaFlowPage = () => {
               key={schema.cdm_uuid}
               className={`group p-5 rounded-xl border transition-all duration-200 hover:shadow-lg
                 ${isDark
-                  ? 'bg-secondary-dark-bg border-white/10 hover:border-white/20'
+                  ? 'bg-secondary-dark-bg border-white/5 hover:border-white/20'
                   : 'bg-white border-gray-200 hover:border-gray-300 shadow-sm'}`}
             >
               {/* Row 1: Name + version | action icons */}
@@ -299,7 +305,7 @@ const SchemaFlowPage = () => {
                 <div className="flex flex-wrap gap-1.5 mb-3">
                   {(Array.isArray(schema.cdm_domain) ? schema.cdm_domain : [schema.cdm_domain]).map((d, i) => (
                     <span key={i} className={`text-[10px] px-2 py-0.5 rounded-full border font-medium
-                      ${isDark ? 'text-gray-400 border-white/10 bg-white/3' : 'text-gray-500 border-gray-200 bg-gray-50'}`}>
+                      ${isDark ? 'text-gray-400 border-white/5 bg-white/3' : 'text-gray-500 border-gray-200 bg-gray-50'}`}>
                       {d}
                     </span>
                   ))}
@@ -318,6 +324,17 @@ const SchemaFlowPage = () => {
           ))}
         </div>
       )}
+
+      {/* Delete Confirmation Alert */}
+      <NewAlertBox 
+        showAlert={!!schemaToDeleteUuid}
+        title="Delete Schema"
+        message="Are you sure you want to delete this schema? This action cannot be undone."
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setSchemaToDeleteUuid(null)}
+        type="error"
+        confirmText="Delete"
+      />
     </div>
   );
 };
