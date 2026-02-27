@@ -76,10 +76,17 @@ export const sidebarItems = [
     ],
   },
   {
-    id: "sr-mapper",
-    name: "JSON Mapper",
+    id: "orchestration",
+    name: "Orchestration",
     icon: <ArrowRightLeft className="w-5 h-5" />,
-    pathname: "/schema-registry/mapper",
+    hasSubmenu: true,
+    submenu: [
+      {
+        id: "orch-transformation",
+        name: "Transformation",
+        pathname: "/orchestration/transformation",
+      },
+    ],
   },
   {
     id: "asset-launchpad",

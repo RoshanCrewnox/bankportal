@@ -62,16 +62,16 @@ const MappingSetupForm = ({
             <ArrowLeft size={20} />
           </button>
           <div>
-            <h1 className="text-2xl font-bold">Mapping Configuration</h1>
-            <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-              Define source schemas and target destinations
-            </p>
-          </div>
+             <h1 className="text-2xl font-bold">Transformation Configuration</h1>
+             <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+               Define source schemas and target destinations
+             </p>
+           </div>
         </div>
         <Button 
           variant="primary"
           onClick={() => setCurrentView('MAPPING')}
-          disabled={!activeProfile.name || !activeProfile.sourceSchemaId || activeProfile.targets.length === 0}
+          disabled={!activeProfile.name || (!activeProfile.sourceSchemaId && !activeProfile.sources?.length) || activeProfile.targets.length === 0}
           icon={<ArrowRightLeft size={18} />}
         >
           Open Visual Mapper
@@ -86,7 +86,7 @@ const MappingSetupForm = ({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
             <label className={`text-xs font-medium ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-              Mapping Name
+              Transformation Name
             </label>
             <input 
               type="text"
@@ -104,7 +104,7 @@ const MappingSetupForm = ({
               type="text"
               value={activeProfile.description}
               onChange={(e) => updateActiveProfile(p => ({ ...p, description: e.target.value }))}
-              placeholder="Briefly describe what this mapping does..."
+              placeholder="Briefly describe what this transformation does..."
               className={inputClass}
             />
           </div>

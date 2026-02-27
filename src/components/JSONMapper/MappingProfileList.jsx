@@ -28,28 +28,28 @@ const MappingProfileList = ({
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold">JSON Mapper</h1>
-          <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-            Manage API transformation profiles and field mappings.
-          </p>
-        </div>
+           <h1 className="text-2xl font-bold">Transformation</h1>
+           <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+             Manage API transformation profiles and field mappings.
+           </p>
+         </div>
         <Button 
-          variant="primary"
-          onClick={handleCreateNew}
-          icon={<Plus size={18} />}
-        >
-          Create New Mapping
-        </Button>
+           variant="primary"
+           onClick={handleCreateNew}
+           icon={<Plus size={18} />}
+         >
+           Create New Transformation
+         </Button>
       </div>
 
       {/* Content */}
       {profiles.length === 0 ? (
         <EmptyState 
           icon={ArrowRightLeft}
-          title="No Mapping Profiles"
-          description="Create your first JSON mapping profile to transform data between different API schemas."
+          title="No Transformation Profiles"
+          description="Create your first transformation profile to transform data between different API schemas."
           action={{
-            label: "Create Mapping",
+            label: "Create Transformation",
             icon: Plus,
             onClick: handleCreateNew
           }}
@@ -74,7 +74,7 @@ const MappingProfileList = ({
                   </div>
                   <div>
                     <h3 className={`font-semibold text-sm ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                      {p.name || 'Untitled Mapping'}
+                      {p.name || 'Untitled Transformation'}
                     </h3>
                     <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
                       {p.id}
@@ -140,13 +140,13 @@ const MappingProfileList = ({
       )}
       {/* Delete Confirmation Alert */}
       <NewAlertBox 
-        showAlert={!!deleteId}
-        title="Delete Mapping"
-        message="Are you sure you want to delete this mapping? This action cannot be undone."
-        onConfirm={handleDelete}
-        onCancel={() => setDeleteId(null)}
-        type="error"
-        confirmText="Delete"
+      showAlert={!!deleteId}
+      title="Delete Transformation"
+      message="Are you sure you want to delete this transformation? This action cannot be undone."
+      onConfirm={handleDelete}
+      onCancel={() => setDeleteId(null)}
+      type="error"
+      confirmText="Delete"
       />
     </div>
   );

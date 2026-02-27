@@ -237,7 +237,7 @@ const useJSONMapper = () => {
 
   const cardClass = "rounded-2xl border backdrop-blur-sm bg-white/5 dark:bg-darkbg border-white/10 dark:border-white/5";
 
-  const inputClass = "w-full px-4 py-3 rounded-lg border transition-all duration-200 focus:ring-2 focus:ring-primary-orange/30 focus:border-primary-orange outline-none bg-white/5 border-white/10 text-white placeholder:text-gray-500";
+  const inputClass = `w-full px-4 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-orange/30 transition-all dark:bg-darkbg dark:border-white/10 dark:text-white dark:placeholder:text-gray-600 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 shadow-sm`;
 
   return {
     profiles,
@@ -272,8 +272,6 @@ const useJSONMapper = () => {
     saveDraftProfile,
     cancelDraftProfile,
     updateActiveProfile,
-    profiles,
-    setProfiles,
     handleMap,
     removeMapping,
     getMappedKeyJson,
@@ -283,7 +281,8 @@ const useJSONMapper = () => {
     cardClass,
     inputClass,
     DUMMY_SCHEMAS,
-    DUMMY_PROVIDERS
+    DUMMY_PROVIDERS,
+    CDM_JSON
   };
 };
 

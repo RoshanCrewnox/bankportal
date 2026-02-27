@@ -36,9 +36,9 @@ import MappingSetupForm from '../../components/JSONMapper/MappingSetupForm';
 // Import custom hook
 import useJSONMapper from '../../hooks/JSONMapper/useJSONMapper';
 
-const JSONMapperPage = () => {
-  const { theme } = useContext(ThemeContext);
-  const isDark = theme === 'dark';
+const TransformationPage = () => {
+   const { theme } = useContext(ThemeContext);
+   const isDark = theme === 'dark';
   
   // Use the custom hook to manage all business logic
   const {
@@ -239,4 +239,4 @@ const JSONMapperPage = () => {
   );
 };
 
-export default JSONMapperPage;
+export default TransformationPage;
